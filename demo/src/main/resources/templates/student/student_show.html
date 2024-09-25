@@ -14,6 +14,8 @@
                 <th>生徒名</th>
                 <th>ステータス</th>
                 <th>学校名</th>
+                <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -22,6 +24,8 @@
                 <td th:text="${student.getName()}"></td>
                 <td th:text="${student.getStatus()}"></td>
                 <td th:text="${student.getSchoolName()}"></td>
+                <td><a th:href="@{/student/edit/__${student.getId()}__}" style="color:green;">編集</a></td>
+                <td><a th:href="@{/student/delete/__${student.getId()__}" style="color:red;">削除</a></td>
             </tr>
         </tbody>
     </table>

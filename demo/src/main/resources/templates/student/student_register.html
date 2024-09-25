@@ -29,9 +29,12 @@
       <label>
         <input type="radio"  th:field="*{status}" value="seminar">講習
       </label>
+      <label>
+        <input type="radio" th:field="*{status}" value="quit">退塾済み
+      </label>
     </div>
     <hr>
-    <label for="schoolId">所属学校名</label>
+    <label for="schoolId">所属学校名(該当する学校が無ければ登録して下さい）</label>
     <div th:each="school:${schoolList}">
       <label>
         <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" >

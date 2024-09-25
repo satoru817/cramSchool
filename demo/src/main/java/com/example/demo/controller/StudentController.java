@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -74,6 +75,50 @@ public class StudentController {
         System.out.println("Converted student shows: " + studentShows.size());
         model.addAttribute("studentShows",studentShows);
         return "student/student_show";
+    }
+
+    @GetMapping("/student/edit/{id}")
+    public String editStudent(@PathVariable(name="id")Integer id,Model model){
+        if(!model.containsAttribute("studentForm")){
+            Student student = studentService.getById(id);
+            StudentForm studentForm = new StudentForm();
+            studentForm.setId(id);
+            studentForm.setName(student.getName());
+            studentForm.setStatus(student.getStatus());
+            studentForm.setSchoolId(student.getSchool().getId());
+            model.addAttribute("studentForm",studentForm);
+        }
+
+        List<School> schoolList = schoolService.fetchAll();
+        model.addAttribute("schoolList",schoolList);
+        return "student_edit";
+    }
+
+    @PostMapping("/studentEdit")
+    public String studentEdit_p(Model model,
+                                    @Validated StudentForm studentForm,
+                                    BindingResult bindingResult,
+                                    RedirectAttributes redirectAttributes){
+        if(!bindingResult.hasErrors()){
+
+            Student student = new Student();
+            student.setId(studentForm.getId());
+            student.setName(studentForm.getName());
+            student.setStatus(studentForm.getStatus());
+            student.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
+            studentService.save(student);
+            return "redirect:/studentShow";
+
+        }else{
+            System.out.println("there is a error");
+            redirectAttributes.addFlashAttribute("studentForm",studentForm);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
+                    +"studentForm",bindingResult);
+            Integer id = studentForm.getId();
+
+
+            return "redirect:/student/edit/";
+        }
     }
 
     public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
