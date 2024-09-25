@@ -5,6 +5,7 @@
     <title>Title</title>
 </head>
 <body>
+    <div th:replace="~{fragment::header}"></div>
     <h1>学校登録をしてください</h1>
     <form th:action="@{/registerSchool}" th:object="${school}" method="post">
         <label for="name">学校名</label>
@@ -13,18 +14,21 @@
         <input type="submit" value="登録">
     </form>
     <br>
+    <p th:if="${successMessage}" style="color:green;"><span th:text="${successMessage}"></span></p>
     <h2>登録済みの学校</h2>
     <table border="1">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>学校名</th>
+                <th>削除(所属する生徒がいる場合は削除出来ません。)</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="school:${schoolList}">
                 <td th:text="${school.getId()}"></td>
                 <td th:text="${school.getName()}"></td>
+                <td><a th:href="@{/school/delete/__${school.getId()}__}">削除</a></td>
             </tr>
         </tbody>
     </table>

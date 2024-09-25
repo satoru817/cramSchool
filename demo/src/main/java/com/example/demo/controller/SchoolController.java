@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -49,6 +50,13 @@ public class SchoolController {
             return "redirect:/registerSchool";
         }
 
+    }
+
+    @GetMapping("/school/delete/{id}")
+    public String delete(@PathVariable(name="id")Integer id, RedirectAttributes redirectAttributes){
+        schoolService.deleteById(id);
+        redirectAttributes.addFlashAttribute("successMessage","学校を削除しました。");
+        return "redirect:/registerSchool";
     }
 
 }

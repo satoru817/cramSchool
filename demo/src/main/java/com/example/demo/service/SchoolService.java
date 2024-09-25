@@ -26,4 +26,8 @@ public class SchoolService {
     public School fetchById(Integer id){
         return schoolRepository.getSchoolById(id);
     }
+
+    public void deleteById(Integer id){
+        schoolRepository.deleteById(id);
+    }
 }
