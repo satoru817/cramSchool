@@ -18,7 +18,6 @@ public class Student {
     private String name;
 
     @Column(name="status")
-    @NotBlank(message="生徒のステータスを選んでください。")
     private String status;
 
     @ManyToOne

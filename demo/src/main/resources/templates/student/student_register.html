@@ -33,7 +33,7 @@
     <label for="schoolId">所属学校名</label>
     <div th:each="school:${schoolList}">
       <label>
-        <input type="radio" th:field="*{schoolId}" value="${school.getId()}" >
+        <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" >
         <span th:text="${school.getName()}"></span>
       </label>
     </div>

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.School;
 import com.example.demo.entity.Student;
+import com.example.demo.entity.StudentShow;
 import com.example.demo.form.StudentForm;
 import com.example.demo.service.SchoolService;
 import com.example.demo.service.StudentService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,15 +47,17 @@ public class StudentController {
                                     BindingResult bindingResult,
                                     RedirectAttributes redirectAttributes){
         if(!bindingResult.hasErrors()){
+
             Student student = new Student();
             student.setId(studentForm.getId());
             student.setName(studentForm.getName());
             student.setStatus(studentForm.getStatus());
             student.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
             studentService.save(student);
-            return studentShow_g(model);
+            return "redirect:/studentShow";
 
         }else{
+            System.out.println("there is a error");
             redirectAttributes.addFlashAttribute("studentForm",studentForm);
             redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
             +"studentForm",bindingResult);
@@ -65,11 +69,27 @@ public class StudentController {
     @GetMapping("/studentShow")
     public String studentShow_g(Model model){
         List<Student> studentList = studentService.fetchAll();
-        model.addAttribute("studentList",studentList);
+
+        List<StudentShow> studentShows = convertToStudentShowList(studentList,schoolService);
+        System.out.println("Converted student shows: " + studentShows.size());
+        model.addAttribute("studentShows",studentShows);
         return "student/student_show";
     }
 
+    public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
+        List<StudentShow> studentShows = new ArrayList<>();
+        for(Student student:students){
+            StudentShow studentShow = new StudentShow();
+            studentShow.setId(student.getId());
+            studentShow.setName(student.getName());
+            studentShow.setStatus(student.getStatus());
+            School school = schoolService.fetchById(student.getSchool().getId());
+            studentShow.setSchoolName(school.getName());
+            studentShows.add(studentShow);
+        }
 
+        return studentShows;
+    }
 
 
 

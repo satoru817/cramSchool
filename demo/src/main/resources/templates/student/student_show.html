@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>生徒一覧</h1>
-    <table>
+    <table border="1">
         <thead>
             <tr>
                 <th>生徒ID</th>
@@ -16,8 +16,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="student:${studentList}">
-                <
+            <tr th:each="student:${studentShows}">
+                <td th:text="${student.getId()}"></td>
+                <td th:text="${student.getName()}"></td>
+                <td th:text="${student.getStatus()}"></td>
+                <td th:text="${student.getSchoolName()}"></td>
             </tr>
         </tbody>
     </table>
