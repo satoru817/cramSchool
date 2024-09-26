@@ -8,14 +8,12 @@ import com.example.demo.form.StudentForm;
 import com.example.demo.service.SchoolService;
 import com.example.demo.service.StudentService;
 
+import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -86,10 +84,13 @@ public class StudentController {
     @GetMapping("/studentEdit/{id}")
     public String editStudent(@PathVariable(name = "id") Integer id,
                               Model model) {
-        Student student = studentService.getById(id);
-        StudentForm studentForm = convertStudentToStudentForm(student);
+        if(!model.containsAttribute("id")&&!model.containsAttribute("studentForm")){
+            model.addAttribute("id",id);
+            Student student = studentService.getById(id);
+            StudentForm studentForm = convertStudentToStudentForm(student);
+            model.addAttribute("studentForm", studentForm);
+        }
 
-        model.addAttribute("studentForm", studentForm);
         List<School> schoolList = schoolService.fetchAll();
         model.addAttribute("schoolList", schoolList);
 
@@ -170,6 +171,26 @@ public class StudentController {
         redirectAttributes.addFlashAttribute("success", "File processed successfully!");
         return "redirect:/studentShow"; // Return to a success view
     }
+
+    @PostMapping("/studentExecEdit/{id}")
+    public String execEdit(@PathVariable(name="id")Integer id,
+                           @ModelAttribute @Validated StudentForm studentForm,
+                           BindingResult bindingResult,
+                           RedirectAttributes redirectAttributes){
+        if(bindingResult.hasErrors()){
+            redirectAttributes.addFlashAttribute("id",id);
+            redirectAttributes.addFlashAttribute("studentForm",studentForm);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX+
+                    Conventions.getVariableName(studentForm),bindingResult);
+            return "redirect:/studentEdit/{id}";//そのままだとこれはエラーだす
+        }else{
+
+        }
+
+    }
+
+
+
     public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
         List<StudentShow> studentShows = new ArrayList<>();
         for(Student student:students){

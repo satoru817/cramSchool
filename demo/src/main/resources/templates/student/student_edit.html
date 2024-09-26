@@ -7,7 +7,7 @@
 <body>
     <div th:replace="fragment.html::header"></div>
     <h1>生徒の編集</h1>
-    <form  th:object="${studentForm}" method="post">
+    <form  th:object="${studentForm}" method="post" th:action="@{/studentExecEdit/__${id}__}">
         <div>
             <label for="code">生徒コード</label><br>
             <input type="text" th:field="*{code}" style="color:blue;">
