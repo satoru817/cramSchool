@@ -9,6 +9,8 @@ public class StudentShow {
 
     private String name;
 
+    private Integer code;
+
     private String status;
 
     private String schoolName;

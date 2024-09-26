@@ -50,7 +50,7 @@ public class StudentController {
         if(!bindingResult.hasErrors()){
 
             Student student = new Student();
-            student.setId(studentForm.getId());
+            student.setCode(studentForm.getCode());
             student.setName(studentForm.getName());
             student.setStatus(studentForm.getStatus());
             student.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
@@ -72,7 +72,7 @@ public class StudentController {
         List<Student> studentList = studentService.fetchAll();
 
         List<StudentShow> studentShows = convertToStudentShowList(studentList,schoolService);
-        System.out.println("Converted student shows: " + studentShows.size());
+
         model.addAttribute("studentShows",studentShows);
         return "student/student_show";
     }
@@ -95,6 +95,7 @@ public class StudentController {
         for(Student student:students){
             StudentShow studentShow = new StudentShow();
             studentShow.setId(student.getId());
+            studentShow.setCode(student.getCode());
             studentShow.setName(student.getName());
             studentShow.setStatus(student.getStatus());
             School school = schoolService.fetchById(student.getSchool().getId());
@@ -106,7 +107,7 @@ public class StudentController {
     }
 
     public StudentForm convertStudentToStudentForm(Student student){
-        return new StudentForm(student.getId(),student.getName(),student.getStatus(),student.getSchool().getId());
+        return new StudentForm(student.getCode(),student.getName(),student.getStatus(),student.getSchool().getId());
     }
 
 

@@ -9,9 +9,9 @@
     <h1>生徒の編集</h1>
     <form  th:object="${studentForm}" method="post">
         <div>
-            <label for="id">生徒番号</label><br>
-            <input type="text" th:field="*{id}" style="color:blue;">
-            <div th:if="${#fields.hasErrors('id')}" th:errors="*{id}" style="color:red;"></div>
+            <label for="code">生徒コード</label><br>
+            <input type="text" th:field="*{code}" style="color:blue;">
+            <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" style="color:red;"></div>
         </div>
         <div>
             <label for="name" >生徒名</label><br>

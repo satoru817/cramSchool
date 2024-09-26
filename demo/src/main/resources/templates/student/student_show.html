@@ -10,7 +10,7 @@
     <table border="1">
         <thead>
             <tr>
-                <th>生徒ID</th>
+                <th>生徒コード</th>
                 <th>生徒名</th>
                 <th>ステータス</th>
                 <th>学校名</th>
@@ -20,7 +20,7 @@
         </thead>
         <tbody>
             <tr th:each="student:${studentShows}">
-                <td th:text="${student.getId()}"></td>
+                <td th:text="${student.getCode()}"></td>
                 <td th:text="${student.getName()}"></td>
                 <td th:text="${student.getStatus()}"></td>
                 <td th:text="${student.getSchoolName()}"></td>

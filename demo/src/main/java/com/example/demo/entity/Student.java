@@ -11,8 +11,12 @@ import java.util.Optional;
 @Table(name="students")
 public class Student {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Integer id;
+
+    @Column(name="code")
+    private Integer code;
 
     @Column(name="name")
     private String name;
