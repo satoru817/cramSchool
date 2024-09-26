@@ -27,7 +27,7 @@ public class SchoolService {
         return schoolRepository.getSchoolById(id);
     }
 
-    public Integer findByName(String schoolName) {
-        return schoolRepository.getSchoolByName(schoolName).getId();
+    public School findByName(String schoolName) {
+        return schoolRepository.getSchoolByName(schoolName);
     }
 }

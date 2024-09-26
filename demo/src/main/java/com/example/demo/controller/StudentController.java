@@ -121,14 +121,11 @@ public class StudentController {
                 // Access the specific columns by header names
                 String studentCode = record.get("生徒コード");
                 Integer studentCodeI = Integer.parseInt(studentCode);
-                String classroom = record.get("所属教室");
                 String schoolName = record.get("在学校名");
                 String course = record.get("所属コース");
-                String grade = record.get("学年");
                 String lastName = record.get("生徒名前(姓)");
                 String firstName = record.get("生徒名前(名)");
-                String gender = record.get("生徒性別");
-                String birthDate = record.get("生年月日");
+
 
                 if(!isAlreadyExists(studentCodeI)){
                     Student student = new Student();
@@ -136,11 +133,11 @@ public class StudentController {
 
                     String studentName=lastName + " "+firstName;
                     student.setName(studentName);
+                    //学校を取ってきてnullじゃなければ登録で良いね。nullのときのエラーhandlingをどうしたらいい？
+                    School school = schoolService.findByName(schoolName);
 
-                    Integer schoolId = schoolService.findByName(schoolName);
-
-                    if(schoolId!=null){
-
+                    if(school!=null){
+                        student.setSchool(school);
                     }
 
                 }
