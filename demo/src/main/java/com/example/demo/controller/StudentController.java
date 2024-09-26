@@ -133,12 +133,29 @@ public class StudentController {
 
                     String studentName=lastName + " "+firstName;
                     student.setName(studentName);
-                    //学校を取ってきてnullじゃなければ登録で良いね。nullのときのエラーhandlingをどうしたらいい？
+                    //学校を取ってきてnullじゃなければ登録で良いkana。nullのときのエラーhandlingをどうしたらいい？
                     School school = schoolService.findByName(schoolName);
 
                     if(school!=null){
                         student.setSchool(school);
                     }
+
+                    String status;
+
+                    switch(course){
+                        case "講習生":
+                            status = "seminar";
+                            break;
+                        case "個別指導本科生":
+                            status="manToMan";
+                            break;
+                        default:
+                            status = "regular";
+                    }
+
+                    student.setStatus(status);
+
+                    studentService.save(student);
 
                 }
 
@@ -150,7 +167,7 @@ public class StudentController {
             return "redirect:/studentShow"; // Return to an error view
         }
 
-        model.addAttribute("message", "File processed successfully!");
+        redirectAttributes.addFlashAttribute("success", "File processed successfully!");
         return "redirect:/studentShow"; // Return to a success view
     }
     public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
