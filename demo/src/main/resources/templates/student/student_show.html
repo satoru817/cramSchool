@@ -6,6 +6,9 @@
 </head>
 <body>
     <div th:replace="fragment.html::header"></div>
+    <div th:if="${error}" style="color:red;">
+       ファイルのアップロードは失敗です
+    </div>
     <h1>生徒一覧</h1>
     <table border="1">
         <thead>

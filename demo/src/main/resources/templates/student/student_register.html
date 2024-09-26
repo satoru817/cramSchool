@@ -44,5 +44,11 @@
     <input type="submit" value="登録">
 
   </form>
+  <hr>
+  <h3>CSVファイルのアップロードはこちらから（同一生徒コードの生徒は登録されません)</h3>
+  <form method="post" enctype="multipart/form-data" th:action="@{/studentUploadCSV}">
+    <input type="file" name="file" accept=".csv" required>
+    <input type="submit" value="Upload">
+  </form>
 </body>
 </html>

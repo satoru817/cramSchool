@@ -26,4 +26,8 @@ public class SchoolService {
     public School fetchById(Integer id){
         return schoolRepository.getSchoolById(id);
     }
+
+    public Integer findByName(String schoolName) {
+        return schoolRepository.getSchoolByName(schoolName).getId();
+    }
 }
