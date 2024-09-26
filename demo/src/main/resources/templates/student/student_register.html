@@ -5,6 +5,7 @@
     <title>Title</title>
 </head>
 <body>
+  <div th:replace="fragment.html::header"></div>
   <h1>生徒登録をしてください</h1>
   <form th:action="@{/studentRegister}" th:object="${studentForm}" method="post">
     <div>
@@ -27,6 +28,9 @@
       </label>
       <label>
         <input type="radio"  th:field="*{status}" value="seminar">講習
+      </label>
+      <label>
+        <input type="radio" th:field="*{status}" value="quit">退塾済み
       </label>
     </div>
     <hr>

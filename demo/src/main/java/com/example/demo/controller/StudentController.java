@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -76,6 +77,19 @@ public class StudentController {
         return "student/student_show";
     }
 
+    @GetMapping("/studentEdit/{id}")
+    public String editStudent(@PathVariable(name="id") Integer id,
+                              Model model){
+        Student student = studentService.getById(id);
+        StudentForm studentForm = convertStudentToStudentForm(student);
+
+        model.addAttribute("studentForm" , studentForm);
+        List<School> schoolList = schoolService.fetchAll();
+        model.addAttribute("schoolList",schoolList);
+
+        return "student/student_edit";
+    }
+
     public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
         List<StudentShow> studentShows = new ArrayList<>();
         for(Student student:students){
@@ -90,6 +104,12 @@ public class StudentController {
 
         return studentShows;
     }
+
+    public StudentForm convertStudentToStudentForm(Student student){
+        return new StudentForm(student.getId(),student.getName(),student.getStatus(),student.getSchool().getId());
+    }
+
+
 
 
 

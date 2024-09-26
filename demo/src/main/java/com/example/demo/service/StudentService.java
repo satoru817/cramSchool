@@ -21,4 +21,6 @@ public class StudentService {
     public List<Student> fetchAll(){
         return studentRepository.findAll();
     }
+
+    public Student getById(Integer id){return studentRepository.getById(id);}
 }

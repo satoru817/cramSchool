@@ -4,11 +4,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 
+@AllArgsConstructor
 @Data
 public class StudentForm {
+    public StudentForm(){
+
+    }
+
     @NotNull(message="生徒番号を入力してください。")//生徒番号のバリデーションはもっと厳しくしないといけない
     private Integer id;
 
