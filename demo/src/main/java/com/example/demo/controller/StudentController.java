@@ -136,22 +136,25 @@ public class StudentController {
                     student.setName(studentName);
                     //学校を取ってきてnullじゃなければ登録で良いkana。nullのときのエラーhandlingをどうしたらいい？
                     School school = schoolService.findByName(schoolName);
+                    School schoolUnknown = schoolService.findByName("不明");
 
                     if(school!=null){
                         student.setSchool(school);
+                    }else{
+                        student.setSchool(schoolUnknown);
                     }
 
                     String status;
 
                     switch(course){
                         case "講習生":
-                            status = "seminar";
+                            status = "講習";
                             break;
                         case "個別指導本科生":
-                            status="manToMan";
+                            status="個別";
                             break;
                         default:
-                            status = "regular";
+                            status = "本科";
                     }
 
                     student.setStatus(status);
