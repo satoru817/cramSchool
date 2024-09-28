@@ -5,13 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-    <div th:replace="~{fragment::header}"></div>
-    <h1>生徒編集画面</h1>
-    <form th:action="@{/studentEdit}" th:object="${studentForm}" method="post">
+    <div th:replace="fragment.html::header"></div>
+    <h1>生徒の編集</h1>
+    <form  th:object="${studentForm}" method="post" th:action="@{/studentExecEdit/__${id}__}">
         <div>
-            <label for="id">生徒番号</label><br>
-            <input type="text" th:field="*{id}" style="color:blue;">
-            <div th:if="${#fields.hasErrors('id')}" th:errors="*{id}" style="color:red;"></div>
+            <label for="code">生徒コード</label><br>
+            <input type="text" th:field="*{code}" style="color:blue;">
+            <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" style="color:red;"></div>
         </div>
         <div>
             <label for="name" >生徒名</label><br>
@@ -42,5 +42,7 @@
             </label>
         </div>
         <input type="submit" value="登録">
+    </form>
+
 </body>
 </html>

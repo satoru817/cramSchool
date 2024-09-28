@@ -27,7 +27,7 @@ public class SchoolService {
         return schoolRepository.getSchoolById(id);
     }
 
-    public void deleteById(Integer id){
-        schoolRepository.deleteById(id);
+    public School findByName(String schoolName) {
+        return schoolRepository.getSchoolByName(schoolName);
     }
 }

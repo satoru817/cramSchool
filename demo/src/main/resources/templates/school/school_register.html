@@ -5,6 +5,7 @@
     <title>Title</title>
 </head>
 <body>
+    <div th:replace="fragment.html::header"></div>
     <div th:replace="~{fragment::header}"></div>
     <h1>学校登録をしてください</h1>
     <form th:action="@{/registerSchool}" th:object="${school}" method="post">

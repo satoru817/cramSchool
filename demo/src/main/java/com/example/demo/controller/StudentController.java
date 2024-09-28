@@ -1,20 +1,24 @@
 package com.example.demo.controller;
-
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import com.example.demo.entity.School;
 import com.example.demo.entity.Student;
 import com.example.demo.entity.StudentShow;
 import com.example.demo.form.StudentForm;
 import com.example.demo.service.SchoolService;
 import com.example.demo.service.StudentService;
+
+import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,20 +28,20 @@ public class StudentController {
     private StudentService studentService;
     private SchoolService schoolService;
 
-    public StudentController(StudentService studentService, SchoolService schoolService){
+    public StudentController(StudentService studentService, SchoolService schoolService) {
         this.studentService = studentService;
         this.schoolService = schoolService;
     }
 
     @GetMapping("/studentRegister")
-    public String studentRegister_g(Model model){
-        if(!model.containsAttribute("studentForm")){
+    public String studentRegister_g(Model model) {
+        if (!model.containsAttribute("studentForm")) {
             StudentForm studentForm = new StudentForm();
-            model.addAttribute("studentForm",studentForm);
+            model.addAttribute("studentForm", studentForm);
         }
 
         List<School> schoolList = schoolService.fetchAll();
-        model.addAttribute("schoolList",schoolList);
+        model.addAttribute("schoolList", schoolList);
 
         return "student/student_register";
     }
@@ -46,86 +50,137 @@ public class StudentController {
     public String studentRegister_p(Model model,
                                     @Validated StudentForm studentForm,
                                     BindingResult bindingResult,
-                                    RedirectAttributes redirectAttributes){
-        if(!bindingResult.hasErrors()){
+                                    RedirectAttributes redirectAttributes) {
+        if (!bindingResult.hasErrors()) {
 
             Student student = new Student();
-            student.setId(studentForm.getId());
+            student.setCode(studentForm.getCode());
             student.setName(studentForm.getName());
             student.setStatus(studentForm.getStatus());
             student.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
             studentService.save(student);
             return "redirect:/studentShow";
 
-        }else{
+        } else {
             System.out.println("there is a error");
-            redirectAttributes.addFlashAttribute("studentForm",studentForm);
+            redirectAttributes.addFlashAttribute("studentForm", studentForm);
             redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
-            +"studentForm",bindingResult);
+                    + "studentForm", bindingResult);
 
             return "redirect:/studentRegister";
         }
     }
 
     @GetMapping("/studentShow")
-    public String studentShow_g(Model model){
+    public String studentShow_g(Model model) {
         List<Student> studentList = studentService.fetchAll();
 
-        List<StudentShow> studentShows = convertToStudentShowList(studentList,schoolService);
-        System.out.println("Converted student shows: " + studentShows.size());
-        model.addAttribute("studentShows",studentShows);
+        List<StudentShow> studentShows = convertToStudentShowList(studentList, schoolService);
+
+        model.addAttribute("studentShows", studentShows);
         return "student/student_show";
     }
 
-    @GetMapping("/student/edit/{id}")
-    public String editStudent(@PathVariable(name="id")Integer id,Model model){
-        if(!model.containsAttribute("studentForm")){
+    @GetMapping("/studentEdit/{id}")
+    public String editStudent(@PathVariable(name = "id") Integer id,
+                              Model model) {
+        if(!model.containsAttribute("id")&&!model.containsAttribute("studentForm")){
+            model.addAttribute("id",id);
             Student student = studentService.getById(id);
-            StudentForm studentForm = new StudentForm();
-            studentForm.setId(id);
-            studentForm.setName(student.getName());
-            studentForm.setStatus(student.getStatus());
-            studentForm.setSchoolId(student.getSchool().getId());
-            model.addAttribute("studentForm",studentForm);
+            StudentForm studentForm = convertStudentToStudentForm(student);
+            model.addAttribute("studentForm", studentForm);
         }
 
         List<School> schoolList = schoolService.fetchAll();
-        model.addAttribute("schoolList",schoolList);
-        return "student_edit";
+        model.addAttribute("schoolList", schoolList);
+
+        return "student/student_edit";
     }
 
-    @PostMapping("/studentEdit")
-    public String studentEdit_p(Model model,
-                                    @Validated StudentForm studentForm,
-                                    BindingResult bindingResult,
-                                    RedirectAttributes redirectAttributes){
-        if(!bindingResult.hasErrors()){
-
-            Student student = new Student();
-            student.setId(studentForm.getId());
-            student.setName(studentForm.getName());
-            student.setStatus(studentForm.getStatus());
-            student.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
-            studentService.save(student);
-            return "redirect:/studentShow";
-
-        }else{
-            System.out.println("there is a error");
-            redirectAttributes.addFlashAttribute("studentForm",studentForm);
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
-                    +"studentForm",bindingResult);
-            Integer id = studentForm.getId();
-
-
-            return "redirect:/student/edit/";
+    @PostMapping("/studentUploadCSV")
+    public String uploadCsv(@RequestParam("file") MultipartFile file, Model model,RedirectAttributes redirectAttributes) {
+        if (file.isEmpty()) {
+            model.addAttribute("error", "Please select a CSV file to upload.");
+            return "error"; // Return to an error view
         }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            // Skip the first two lines (metadata)
+            reader.readLine(); // Skip "生徒マスタ"
+            reader.readLine(); // Skip "日付,2024/09/26"
+
+            // Read the CSV records starting from the header
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT
+                    .withDelimiter(',')
+                    .withQuote('"')
+                    .withFirstRecordAsHeader()  // Use the first line after the skipped lines as header
+                    .parse(reader);
+
+            for (CSVRecord record : records) {
+
+                System.out.println("Record: " + record);
+                // Access the specific columns by header names
+                String studentCode = record.get("生徒コード");
+                Integer studentCodeI = Integer.parseInt(studentCode);
+                String schoolName = record.get("在学校名");
+                String course = record.get("所属コース");
+                String lastName = record.get("生徒名前(姓)");
+                String firstName = record.get("生徒名前(名)");
+
+
+                if(!isAlreadyExists(studentCodeI)){
+                    Student student = new Student();
+                    student.setCode(studentCodeI);
+
+                    String studentName=lastName + " "+firstName;
+                    student.setName(studentName);
+                    //学校を取ってきてnullじゃなければ登録で良いkana。nullのときのエラーhandlingをどうしたらいい？
+                    School school = schoolService.findByName(schoolName);
+
+                    if(school!=null){
+                        student.setSchool(school);
+                    }
+
+                    String status;
+
+                    switch(course){
+                        case "講習生":
+                            status = "seminar";
+                            break;
+                        case "個別指導本科生":
+                            status="manToMan";
+                            break;
+                        default:
+                            status = "regular";
+                    }
+
+                    student.setStatus(status);
+
+                    studentService.save(student);
+
+                }
+
+
+
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error processing file: " + e.getMessage());
+            return "redirect:/studentShow"; // Return to an error view
+        }
+
+        redirectAttributes.addFlashAttribute("success", "File processed successfully!");
+        return "redirect:/studentShow"; // Return to a success view
     }
+
+
+
 
     public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
         List<StudentShow> studentShows = new ArrayList<>();
         for(Student student:students){
             StudentShow studentShow = new StudentShow();
             studentShow.setId(student.getId());
+            studentShow.setCode(student.getCode());
             studentShow.setName(student.getName());
             studentShow.setStatus(student.getStatus());
             School school = schoolService.fetchById(student.getSchool().getId());
@@ -135,6 +190,16 @@ public class StudentController {
 
         return studentShows;
     }
+
+    public StudentForm convertStudentToStudentForm(Student student){
+        return new StudentForm(student.getCode(),student.getName(),student.getStatus(),student.getSchool().getId());
+    }
+
+    public Boolean isAlreadyExists(Integer code){
+        return !(studentService.findByCode(code)==null);
+    }
+
+
 
 
 

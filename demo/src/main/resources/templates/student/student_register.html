@@ -5,13 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-  <div th:replace="~{fragment::header}"></div>
+  <div th:replace="fragment.html::header"></div>
   <h1>生徒登録をしてください</h1>
   <form th:action="@{/studentRegister}" th:object="${studentForm}" method="post">
     <div>
-      <label for="id">生徒番号</label><br>
-      <input type="text" th:field="*{id}" style="color:blue;">
-      <div th:if="${#fields.hasErrors('id')}" th:errors="*{id}" style="color:red;"></div>
+      <label for="code">生徒コード</label><br>
+      <input type="text" th:field="*{code}" style="color:blue;">
+      <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" style="color:red;"></div>
     </div>
     <div>
       <label for="name" >生徒名</label><br>
@@ -34,7 +34,7 @@
       </label>
     </div>
     <hr>
-    <label for="schoolId">所属学校名(該当する学校が無ければ登録して下さい）</label>
+    <label for="schoolId">所属学校名</label>
     <div th:each="school:${schoolList}">
       <label>
         <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" >
@@ -43,6 +43,13 @@
     </div>
     <input type="submit" value="登録">
 
+  </form>
+  <hr>
+  <h3>CSVファイルのアップロードはこちらから（UTF-8に変換して保存してから行ってください。教師のデータは除いておいてください。)</h3>
+  <p>CSVのencodingをUTF-8にする方法は<a href="https://atmarkit.itmedia.co.jp/ait/articles/2112/20/news026.html#:~:text=Excel%202016%E4%BB%A5%E9%99%8D%E3%81%AE%E5%A0%B4%E5%90%88%E3%80%81CSV%E3%81%A7%E4%BF%9D%E5%AD%98%E3%81%97%E3%81%9F%E3%81%84%E3%82%B7%E3%83%BC%E3%83%88,%E3%82%88%E3%81%84%EF%BC%88Excel%202016%E3%81%A7%E3%81%AF%E3%80%81%E6%9B%B4%E6%96%B0">こちら</a></p>
+  <form method="post" enctype="multipart/form-data" th:action="@{/studentUploadCSV}">
+    <input type="file" name="file" accept=".csv" required>
+    <input type="submit" value="Upload">
   </form>
 </body>
 </html>

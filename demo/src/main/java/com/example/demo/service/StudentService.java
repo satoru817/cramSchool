@@ -22,7 +22,9 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
-    public Student getById(Integer id){
-        return studentRepository.getById(id);
+    public Student getById(Integer id){return studentRepository.getById(id);}
+
+    public Student findByCode(Integer code){
+        return studentRepository.getByCode(code);
     }
 }
