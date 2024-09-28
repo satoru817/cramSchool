@@ -30,4 +30,8 @@ public class SchoolService {
     public School findByName(String schoolName) {
         return schoolRepository.getSchoolByName(schoolName);
     }
+
+    public void deleteById(Integer id) {
+        schoolRepository.deleteById(id);
+    }
 }

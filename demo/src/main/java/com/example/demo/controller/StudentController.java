@@ -173,7 +173,27 @@ public class StudentController {
     }
 
 
+    @PostMapping("/studentExecEdit/{id}")
+    public String DoEdit(@PathVariable(name="id")Integer id,
+                         @Validated StudentForm studentForm,
+                         BindingResult bindingResult,
+                         RedirectAttributes redirectAttributes){
+        if(bindingResult.hasErrors()){
+            redirectAttributes.addFlashAttribute("id",id);
+            redirectAttributes.addFlashAttribute("studentForm",studentForm);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
+            + Conventions.getVariableName(studentForm),bindingResult);
 
+
+            return "redirect:/studentEdit/{id}";
+
+        }else{
+            Student student = convertStudentFormToStudent(studentForm,id,schoolService);
+            studentService.save(student);
+            redirectAttributes.addFlashAttribute("editSuccess");
+            return "redirect:/studentShow";
+        }
+    }
 
     public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
         List<StudentShow> studentShows = new ArrayList<>();
@@ -193,6 +213,18 @@ public class StudentController {
 
     public StudentForm convertStudentToStudentForm(Student student){
         return new StudentForm(student.getCode(),student.getName(),student.getStatus(),student.getSchool().getId());
+    }
+
+    public Student convertStudentFormToStudent(StudentForm studentForm,Integer id,SchoolService schoolService){
+        //puts id and convert schoolId to real school instance
+        Student student = new Student();
+        student.setId(id);
+        student.setCode(studentForm.getCode());
+        student.setName(studentForm.getName());
+        student.setStatus(studentForm.getStatus());
+        School school = schoolService.fetchById(studentForm.getSchoolId());
+        student.setSchool(school);
+        return student;
     }
 
     public Boolean isAlreadyExists(Integer code){

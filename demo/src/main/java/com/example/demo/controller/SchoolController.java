@@ -55,6 +55,7 @@ public class SchoolController {
     @GetMapping("/school/delete/{id}")
     public String delete(@PathVariable(name="id")Integer id, RedirectAttributes redirectAttributes){
         //schoolService.deleteById(id); まだ削除昨日は実装していない
+        schoolService.deleteById(id);
         redirectAttributes.addFlashAttribute("successMessage","学校を削除しました。");
         return "redirect:/registerSchool";
     }
