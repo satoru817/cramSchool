@@ -14,9 +14,11 @@ public class SchoolStudent {
     @Column(name="id")
     private Integer id;
 
+    @ManyToOne
     @JoinColumn(name="school_id")
     private School school;
 
+    @ManyToOne
     @JoinColumn(name="student_id")
     private Student student;
 

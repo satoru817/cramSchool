@@ -1,15 +1,18 @@
 package com.example.demo.controller;
+import com.example.demo.entity.SchoolStudent;
+import com.example.demo.service.SchoolStudentService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import com.example.demo.entity.School;
 import com.example.demo.entity.Student;
-import com.example.demo.entity.StudentShow;
+import com.example.demo.form.StudentShow;
 import com.example.demo.form.StudentForm;
 import com.example.demo.service.SchoolService;
 import com.example.demo.service.StudentService;
 
 import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -19,20 +22,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class StudentController {
     private StudentService studentService;
     private SchoolService schoolService;
+    private SchoolStudentService schoolStudentService;
 
-    public StudentController(StudentService studentService, SchoolService schoolService) {
+    public StudentController(StudentService studentService, SchoolService schoolService,SchoolStudentService schoolStudentService) {
         this.studentService = studentService;
         this.schoolService = schoolService;
+        this.schoolStudentService = schoolStudentService;
     }
 
+    //書き換え不要
     @GetMapping("/studentRegister")
     public String studentRegister_g(Model model) {
         if (!model.containsAttribute("studentForm")) {
@@ -46,6 +53,8 @@ public class StudentController {
         return "student/student_register";
     }
 
+    //書き換え済み
+    @Transactional
     @PostMapping("/studentRegister")
     public String studentRegister_p(Model model,
                                     @Validated StudentForm studentForm,
@@ -53,12 +62,25 @@ public class StudentController {
                                     RedirectAttributes redirectAttributes) {
         if (!bindingResult.hasErrors()) {
 
+            Integer code = studentForm.getCode();
+            Integer schoolId = studentForm.getSchoolId();
+            School school = schoolService.fetchById(schoolId);
+
+            //studentオブジェクトの生成とDBへの保存
             Student student = new Student();
-            student.setCode(studentForm.getCode());
+            student.setCode(code);
             student.setName(studentForm.getName());
             student.setStatus(studentForm.getStatus());
-            student.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
             studentService.save(student);
+
+            //SchoolStudentオブジェクトの生成とDBへの保存
+            SchoolStudent schoolStudent = new SchoolStudent();
+
+            schoolStudent.setStudent(student);
+            schoolStudent.setSchool(school);
+
+            schoolStudentService.save(schoolStudent);
+
             return "redirect:/studentShow";
 
         } else {
@@ -71,16 +93,19 @@ public class StudentController {
         }
     }
 
+    //書き換え不要
     @GetMapping("/studentShow")
     public String studentShow_g(Model model) {
         List<Student> studentList = studentService.fetchAll();
 
-        List<StudentShow> studentShows = convertToStudentShowList(studentList, schoolService);
+        List<StudentShow> studentShows = convertToStudentShowList(studentList);
 
         model.addAttribute("studentShows", studentShows);
+
         return "student/student_show";
     }
 
+    //書き換え不要
     @GetMapping("/studentEdit/{id}")
     public String editStudent(@PathVariable(name = "id") Integer id,
                               Model model) {
@@ -97,6 +122,9 @@ public class StudentController {
         return "student/student_edit";
     }
 
+
+    //これはCSVから初めて生徒情報を読み込むときに使うメソッド。
+    //すでに存在する生徒はスルーされる(studentCodeによって）
     @PostMapping("/studentUploadCSV")
     public String uploadCsv(@RequestParam("file") MultipartFile file, Model model,RedirectAttributes redirectAttributes) {
         if (file.isEmpty()) {
@@ -138,10 +166,14 @@ public class StudentController {
                     School school = schoolService.findByName(schoolName);
                     School schoolUnknown = schoolService.findByName("不明");
 
+                    SchoolStudent schoolStudent = new SchoolStudent();
+
                     if(school!=null){
-                        student.setSchool(school);
+                        //student.setSchool(school);
+                        schoolStudent.setSchool(school);
                     }else{
-                        student.setSchool(schoolUnknown);
+                        //student.setSchool(schoolUnknown);
+                        schoolStudent.setSchool(schoolUnknown);
                     }
 
                     String status;
@@ -161,6 +193,10 @@ public class StudentController {
 
                     studentService.save(student);
 
+                    schoolStudent.setStudent(student);
+                    schoolStudentService.save(schoolStudent);
+
+
                 }
 
 
@@ -175,7 +211,7 @@ public class StudentController {
         return "redirect:/studentShow"; // Return to a success view
     }
 
-
+    //書き換え完了?
     @PostMapping("/studentExecEdit/{id}")
     public String DoEdit(@PathVariable(name="id")Integer id,
                          @Validated StudentForm studentForm,
@@ -191,22 +227,39 @@ public class StudentController {
             return "redirect:/studentEdit/{id}";
 
         }else{
-            Student student = convertStudentFormToStudent(studentForm,id,schoolService);
-            studentService.save(student);
+            Student student = convertStudentFormToStudent(studentForm,id);
+            studentService.save(student);//codeの変更やstatusの変更は履歴を残さないでそのままDBに変更かける。
+
+            //このあとのコードで、以前のschoolstudentオブジェクトの最新のものを更新し、新たにschoolstudentオブジェクトを作成する。
+            SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(id).getFirst();
+            schoolStudent.setChangedAt(new Date());//現在の日付をChangedAtに登録する。
+            schoolStudentService.save(schoolStudent);//save the updated SchoolStudent
+
+            SchoolStudent newSchoolStudent = new SchoolStudent();
+            newSchoolStudent.setStudent(student);
+            newSchoolStudent.setSchool(schoolStudent.getSchool());
+            schoolStudentService.save(newSchoolStudent);//新しいSchoolStudentオブジェクトをDBに保存する
+
             redirectAttributes.addFlashAttribute("editSuccess");
             return "redirect:/studentShow";
         }
     }
 
-    public List<StudentShow> convertToStudentShowList(List<Student> students,SchoolService schoolService){
+    //書き換え完了
+    public List<StudentShow> convertToStudentShowList(List<Student> students){
         List<StudentShow> studentShows = new ArrayList<>();
         for(Student student:students){
             StudentShow studentShow = new StudentShow();
-            studentShow.setId(student.getId());
+            Integer studentId = student.getId();
+            studentShow.setId(studentId);
             studentShow.setCode(student.getCode());
             studentShow.setName(student.getName());
             studentShow.setStatus(student.getStatus());
-            School school = schoolService.fetchById(student.getSchool().getId());
+
+            SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(studentId).getFirst();
+
+            School school = schoolStudent.getSchool();
+
             studentShow.setSchoolName(school.getName());
             studentShows.add(studentShow);
         }
@@ -214,19 +267,21 @@ public class StudentController {
         return studentShows;
     }
 
+    //書き換え完了
     public StudentForm convertStudentToStudentForm(Student student){
-        return new StudentForm(student.getCode(),student.getName(),student.getStatus(),student.getSchool().getId());
+        return new StudentForm(student.getCode(),student.getName(),student.getStatus(),getSchoolNowYouBelongTo(student).getId());
+
     }
 
-    public Student convertStudentFormToStudent(StudentForm studentForm,Integer id,SchoolService schoolService){
+    //書き換え完了
+    public Student convertStudentFormToStudent(StudentForm studentForm,Integer id){
         //puts id and convert schoolId to real school instance
         Student student = new Student();
         student.setId(id);
         student.setCode(studentForm.getCode());
         student.setName(studentForm.getName());
         student.setStatus(studentForm.getStatus());
-        School school = schoolService.fetchById(studentForm.getSchoolId());
-        student.setSchool(school);
+
         return student;
     }
 
@@ -234,8 +289,10 @@ public class StudentController {
         return !(studentService.findByCode(code)==null);
     }
 
-
-
+    //新たに追加したmethod
+    public School getSchoolNowYouBelongTo(Student student){
+        return schoolStudentService.getSchoolStudentsByStudentIdOrdered(student.getId()).getFirst().getSchool();
+    }
 
 
 }

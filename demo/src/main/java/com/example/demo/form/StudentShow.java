@@ -1,6 +1,5 @@
-package com.example.demo.entity;
+package com.example.demo.form;
 
-import jakarta.persistence.Entity;
 import lombok.Data;
 
 @Data
