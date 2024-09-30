@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+    <div th:if="${error}" style="color:red;">
+       <p th:text="${error}"></p>
+    </div>
+    <div th:if="${success}">
+        <p style="color:green;" th:text="${success}"></p>
+    </div>
+    <div th:if="${editSuccess}">
+        <p style="color:green;">生徒の編集は成功しました。</p>
+    </div>
+    <h1>生徒一覧</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>生徒コード</th>
+                <th>生徒名</th>
+                <th>ステータス</th>
+                <th>学校名</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="student:${studentShows}">
+                <td th:text="${student.getCode()}"></td>
+                <td th:text="${student.getName()}"></td>
+                <td th:text="${student.getStatus()}"></td>
+                <td th:text="${student.getSchoolName()}"></td>
+                <td><a th:href="@{/studentEdit/__${student.getId()}__}" style="color:green;">生徒情報編集</a></td>
+                <td><a th:href="@{/student/delete/__${student.getId()}__}" style="color:red;">削除</a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

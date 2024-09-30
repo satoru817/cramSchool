@@ -24,9 +24,5 @@ public class Student {
     @Column(name="status")
     private String status;
 
-    @ManyToOne
-    @JoinColumn(name="school_id")
-    private School school;
-
 
 }
