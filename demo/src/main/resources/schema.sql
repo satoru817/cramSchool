@@ -12,6 +12,8 @@ create table if not exists school_student(
 id int not null primary key auto_increment,
 school_id int not null,
 student_id int not null,
-created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-changed_at DATETIME  NOT NULL DEFAULT '9999-12-31 23:59:59' ON UPDATE CURRENT_TIMESTAMP ,
+created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+changed_at DATE  NOT NULL DEFAULT '9999-12-31' ON UPDATE CURRENT_DATE,
+ FOREIGN KEY (school_id) REFERENCES schools(id),
+ FOREIGN KEY (student_id) REFERENCES students(id)
 )
