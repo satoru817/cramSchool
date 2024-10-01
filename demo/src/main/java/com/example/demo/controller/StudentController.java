@@ -41,7 +41,8 @@ public class StudentController {
     Date biggestDate = dateFormat.parse(strDate);
 
     Date smallestDate = new Date(0);
-    ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小1","小2","小3","小4","小5","小6","中1","中2","中3","高1","高2","高3"));
+    ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小１","小２","小３","小４","小５","小６","中１","中２","中３","高１","高２","高３"));
+    //これは順番付きの配列
 
     public StudentController(StudentService studentService, SchoolService schoolService,SchoolStudentService schoolStudentService) throws ParseException {
         this.studentService = studentService;
@@ -165,6 +166,9 @@ public class StudentController {
                 // Access the specific columns by header names
                 String studentCode = record.get("生徒コード");
                 Long studentCodeL = Long.valueOf(studentCode);
+                String grade = record.get("学年");
+                Integer gradeI = gradeList.indexOf(grade);
+                Integer el1 = getWhenEnteredElementarySchool(gradeI);
                 String schoolName = record.get("在学校名");
                 String course = record.get("所属コース");
                 String lastName = record.get("生徒名前(姓)");
@@ -178,6 +182,8 @@ public class StudentController {
                     String studentName=lastName + " "+firstName;
                     student.setName(studentName);
                     //学校を取ってきてnullじゃなければ登録で良いkana。nullのときのエラーhandlingをどうしたらいい？
+                    //el1をせっとするメソッドが必要
+                    student.setEl1(el1);
                     School school = schoolService.findByName(schoolName);
                     School schoolUnknown = schoolService.findByName("不明");
 
