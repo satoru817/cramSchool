@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h2>テスト登録フォーム</h2>
+    <form th:object="${regularTest}">
+        <label for="schoolId">実施学校名</label>
+        <div th:each="school:${schoolList}">
+            <label>
+                <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" >
+                <span th:text="${school.getName()}"></span>
+            </label>
+        </div>
+        <label for ="term">年度</label>
+        <input type=""
+    </form>
+
+</body>
+</html>
