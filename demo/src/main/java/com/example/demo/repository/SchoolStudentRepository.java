@@ -8,5 +8,5 @@ import java.util.List;
 public interface SchoolStudentRepository extends JpaRepository<SchoolStudent,Integer> {
    List<SchoolStudent> findAllByOrderByCreatedAtAsc();
 
-   List<SchoolStudent> findByStudentIdOrderByCreatedAtDsc(Integer studentId);
+   List<SchoolStudent> findByStudentIdOrderByCreatedAtAsc(Integer studentId);
 }

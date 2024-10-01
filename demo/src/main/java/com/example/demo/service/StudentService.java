@@ -24,7 +24,7 @@ public class StudentService {
 
     public Student getById(Integer id){return studentRepository.getById(id);}
 
-    public Student findByCode(Integer code){
+    public Student findByCode(Long code){
         return studentRepository.getByCode(code);
     }
 }

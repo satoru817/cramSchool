@@ -16,7 +16,7 @@ public class Student {
     private Integer id;
 
     @Column(name="code")
-    private Integer code;
+    private Long code;
 
     @Column(name="name")
     private String name;

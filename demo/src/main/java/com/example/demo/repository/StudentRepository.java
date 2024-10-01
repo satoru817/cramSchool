@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StudentRepository extends JpaRepository<Student, Integer> {
 
 
-    Student getByCode(Integer code);
+    Student getByCode(Long code);
 
 
     @Override

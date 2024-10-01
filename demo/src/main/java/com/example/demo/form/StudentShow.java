@@ -8,7 +8,7 @@ public class StudentShow {
 
     private String name;
 
-    private Integer code;
+    private Long code;
 
     private String status;
 

@@ -22,6 +22,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,7 +35,13 @@ public class StudentController {
     private SchoolService schoolService;
     private SchoolStudentService schoolStudentService;
 
-    public StudentController(StudentService studentService, SchoolService schoolService,SchoolStudentService schoolStudentService) {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    String strDate = "9999-12-31";
+    Date biggestDate = dateFormat.parse(strDate);
+
+    Date smallestDate = new Date(0);
+
+    public StudentController(StudentService studentService, SchoolService schoolService,SchoolStudentService schoolStudentService) throws ParseException {
         this.studentService = studentService;
         this.schoolService = schoolService;
         this.schoolStudentService = schoolStudentService;
@@ -62,7 +70,7 @@ public class StudentController {
                                     RedirectAttributes redirectAttributes) {
         if (!bindingResult.hasErrors()) {
 
-            Integer code = studentForm.getCode();
+            Long code = Long.valueOf(studentForm.getCode());
             Integer schoolId = studentForm.getSchoolId();
             School school = schoolService.fetchById(schoolId);
 
@@ -78,6 +86,8 @@ public class StudentController {
 
             schoolStudent.setStudent(student);
             schoolStudent.setSchool(school);
+            schoolStudent.setCreatedAt(smallestDate);
+            schoolStudent.setChangedAt(biggestDate);
 
             schoolStudentService.save(schoolStudent);
 
@@ -149,16 +159,16 @@ public class StudentController {
                 System.out.println("Record: " + record);
                 // Access the specific columns by header names
                 String studentCode = record.get("生徒コード");
-                Integer studentCodeI = Integer.parseInt(studentCode);
+                Long studentCodeL = Long.valueOf(studentCode);
                 String schoolName = record.get("在学校名");
                 String course = record.get("所属コース");
                 String lastName = record.get("生徒名前(姓)");
                 String firstName = record.get("生徒名前(名)");
 
 
-                if(!isAlreadyExists(studentCodeI)){
+                if(!isAlreadyExists(studentCodeL)){
                     Student student = new Student();
-                    student.setCode(studentCodeI);
+                    student.setCode(studentCodeL);
 
                     String studentName=lastName + " "+firstName;
                     student.setName(studentName);
@@ -194,6 +204,11 @@ public class StudentController {
                     studentService.save(student);
 
                     schoolStudent.setStudent(student);
+                    schoolStudent.setCreatedAt(smallestDate);
+
+
+                    schoolStudent.setChangedAt(biggestDate);
+
                     schoolStudentService.save(schoolStudent);
 
 
@@ -231,13 +246,15 @@ public class StudentController {
             studentService.save(student);//codeの変更やstatusの変更は履歴を残さないでそのままDBに変更かける。
 
             //このあとのコードで、以前のschoolstudentオブジェクトの最新のものを更新し、新たにschoolstudentオブジェクトを作成する。
-            SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(id).getFirst();
-            schoolStudent.setChangedAt(new Date());//現在の日付をChangedAtに登録する。
+            SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(id).getLast();
+            schoolStudent.setChangedAt(new Date());//現在の日付をChangedAtに登録する。これはうまくいっている
             schoolStudentService.save(schoolStudent);//save the updated SchoolStudent
 
             SchoolStudent newSchoolStudent = new SchoolStudent();
             newSchoolStudent.setStudent(student);
-            newSchoolStudent.setSchool(schoolStudent.getSchool());
+            newSchoolStudent.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
+            newSchoolStudent.setCreatedAt(new Date());
+            newSchoolStudent.setChangedAt(biggestDate);
             schoolStudentService.save(newSchoolStudent);//新しいSchoolStudentオブジェクトをDBに保存する
 
             redirectAttributes.addFlashAttribute("editSuccess");
@@ -256,7 +273,7 @@ public class StudentController {
             studentShow.setName(student.getName());
             studentShow.setStatus(student.getStatus());
 
-            SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(studentId).getFirst();
+            SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(studentId).getLast();
 
             School school = schoolStudent.getSchool();
 
@@ -285,13 +302,13 @@ public class StudentController {
         return student;
     }
 
-    public Boolean isAlreadyExists(Integer code){
+    public Boolean isAlreadyExists(Long code){
         return !(studentService.findByCode(code)==null);
     }
 
     //新たに追加したmethod
     public School getSchoolNowYouBelongTo(Student student){
-        return schoolStudentService.getSchoolStudentsByStudentIdOrdered(student.getId()).getFirst().getSchool();
+        return schoolStudentService.getSchoolStudentsByStudentIdOrdered(student.getId()).getLast().getSchool();
     }
 
 

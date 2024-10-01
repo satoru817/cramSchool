@@ -19,7 +19,7 @@ public class StudentForm {
 //    private Integer id;IDは自動生成
 
     @NotNull(message="生徒コードを入力してください。")
-    private Integer code;
+    private Long code;
 
 
     @NotBlank(message="生徒名を入力してください")
