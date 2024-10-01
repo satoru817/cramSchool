@@ -254,7 +254,7 @@ public class StudentController {
 
         }else{
             Student student = convertStudentFormToStudent(studentForm,id);
-            studentService.save(student);//codeの変更やstatusの変更は履歴を残さないでそのままDBに変更かける。
+            studentService.save(student);//codeの変更やstatusの変更は履歴を残さないでそのままDBに変更をかける。
 
             //このあとのコードで、以前のschoolstudentオブジェクトの最新のものを更新し、新たにschoolstudentオブジェクトを作成する。
             SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(id).getLast();
@@ -328,6 +328,7 @@ public class StudentController {
         student.setCode(studentForm.getCode());
         student.setName(studentForm.getName());
         student.setStatus(studentForm.getStatus());
+        student.setEl1(getWhenEnteredElementarySchool(studentForm.getGrade()));
 
         return student;
     }
