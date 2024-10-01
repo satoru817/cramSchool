@@ -18,6 +18,9 @@ public class Student {
     @Column(name="code")
     private Long code;
 
+    @Column(name="el1")
+    private Integer el1;//小学校に入学した時の西暦が入る。学年判定用。
+
     @Column(name="name")
     private String name;
 
