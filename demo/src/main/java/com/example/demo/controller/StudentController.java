@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class StudentController {
     Date biggestDate = dateFormat.parse(strDate);
 
     Date smallestDate = new Date(0);
+    ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小1","小2","小3","小4","小5","小6","中1","中2","中3","高1","高2","高3"));
 
     public StudentController(StudentService studentService, SchoolService schoolService,SchoolStudentService schoolStudentService) throws ParseException {
         this.studentService = studentService;
@@ -79,6 +81,9 @@ public class StudentController {
             student.setCode(code);
             student.setName(studentForm.getName());
             student.setStatus(studentForm.getStatus());
+
+            student.setEl1(getWhenEnteredElementarySchool(studentForm.getGrade()));
+
             studentService.save(student);
 
             //SchoolStudentオブジェクトの生成とDBへの保存
@@ -108,7 +113,7 @@ public class StudentController {
     public String studentShow_g(Model model) {
         List<Student> studentList = studentService.fetchAll();
 
-        List<StudentShow> studentShows = convertToStudentShowList(studentList);
+        List<StudentShow> studentShows = convertToStudentShowList(studentList);//これを書き換えなければ->owatta
 
         model.addAttribute("studentShows", studentShows);
 
@@ -122,7 +127,7 @@ public class StudentController {
         if(!model.containsAttribute("id")&&!model.containsAttribute("studentForm")){
             model.addAttribute("id",id);
             Student student = studentService.getById(id);
-            StudentForm studentForm = convertStudentToStudentForm(student);
+            StudentForm studentForm = convertStudentToStudentForm(student);//このメソッドをどうにかする
             model.addAttribute("studentForm", studentForm);
         }
 
@@ -262,23 +267,42 @@ public class StudentController {
         }
     }
 
+    //Studentのel1から学年(1から12)を取得する
+    public Integer getSchoolGrade(Student student){
+        // 今年の4月1日を取得
+        LocalDate thisYearApril1 = LocalDate.now().withMonth(4).withDayOfMonth(1);
+
+        // 今日の日付を取得
+        LocalDate today = LocalDate.now();
+
+        int currentYear = LocalDate.now().getYear();
+
+        int grade;
+
+        if(today.isBefore(thisYearApril1)){
+            grade = currentYear - student.getEl1();
+        }else{
+            grade = currentYear - student.getEl1() +1;
+        }
+
+        return grade;
+    }
+
+    public StudentShow convertStudentToStudentShow(Student student){
+
+        String schoolGrade = gradeList.get(getSchoolGrade(student));
+
+        return new StudentShow(student.getId(),student.getName(),student.getCode(),schoolGrade,student.getStatus(),getSchoolNowYouBelongTo(student).getName());
+
+
+    }
+
     //書き換え完了
     public List<StudentShow> convertToStudentShowList(List<Student> students){
         List<StudentShow> studentShows = new ArrayList<>();
         for(Student student:students){
-            StudentShow studentShow = new StudentShow();
-            Integer studentId = student.getId();
-            studentShow.setId(studentId);
-            studentShow.setCode(student.getCode());
-            studentShow.setName(student.getName());
-            studentShow.setStatus(student.getStatus());
 
-            SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(studentId).getLast();
-
-            School school = schoolStudent.getSchool();
-
-            studentShow.setSchoolName(school.getName());
-            studentShows.add(studentShow);
+            studentShows.add(convertStudentToStudentShow(student));
         }
 
         return studentShows;
@@ -286,7 +310,7 @@ public class StudentController {
 
     //書き換え完了
     public StudentForm convertStudentToStudentForm(Student student){
-        return new StudentForm(student.getCode(),student.getName(),student.getStatus(),getSchoolNowYouBelongTo(student).getId());
+        return new StudentForm(student.getCode(),getSchoolGrade(student),student.getName(),student.getStatus(),getSchoolNowYouBelongTo(student).getId());
 
     }
 
@@ -309,6 +333,25 @@ public class StudentController {
     //新たに追加したmethod
     public School getSchoolNowYouBelongTo(Student student){
         return schoolStudentService.getSchoolStudentsByStudentIdOrdered(student.getId()).getLast().getSchool();
+    }
+
+    //小学一年生は高校3年生は12の数値から小学校入学時(3/31)時点の西暦を算出する関数
+    public int getWhenEnteredElementarySchool(int grade){
+
+        // 今年の4月1日を取得
+        LocalDate thisYearApril1 = LocalDate.now().withMonth(4).withDayOfMonth(1);
+
+        // 今日の日付を取得
+        LocalDate today = LocalDate.now();
+
+        //現在の年を取得
+        int currentYear = LocalDate.now().getYear();
+
+        if(today.isBefore(thisYearApril1)){
+            return currentYear - grade;
+        }else{
+            return currentYear + 1 - grade;
+        }
     }
 
 

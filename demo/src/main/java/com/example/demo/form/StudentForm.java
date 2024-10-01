@@ -21,6 +21,8 @@ public class StudentForm {
     @NotNull(message="生徒コードを入力してください。")
     private Long code;
 
+    @NotNull(message="生徒の学年を選択してください。")
+    private Integer grade;//小学一年生を1として増やしていく。生徒の学年情報を取得する。
 
     @NotBlank(message="生徒名を入力してください")
     private String name;
