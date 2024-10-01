@@ -32,7 +32,50 @@
       <label>
         <input type="radio" th:field="*{status}" value="quit">退塾済み
       </label>
+      <div th:if="${#fields.hasErrors('status')}" th:errors="*{status}" style="color:red;"></div>
     </div>
+    <div>
+      <label for="grade">現在の学年を選択してください。</label><br>
+      <label>
+        <input type="radio" th:field="*{grade}" value="1" >小学1年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="2">小学2年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="3">小学3年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="4">小学4年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="5">小学5年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="6">小学6年生
+      </label>
+      <br>
+      <label>
+        <input type="radio" th:field="*{grade}" value="7">中学1年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="8">中学2年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="9">中学3年生
+      </label>
+      <br>
+      <label>
+        <input type="radio" th:field="*{grade}" value="10">高校1年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="11">高校2年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="12">高校3年生
+      </label>
+    </div>
+    <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" style="color:red;"></div>
     <hr>
     <label for="schoolId">所属学校名</label>
     <div th:each="school:${schoolList}">

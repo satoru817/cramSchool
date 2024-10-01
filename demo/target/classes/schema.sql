@@ -4,6 +4,7 @@ create table if not exists schools(
 
 create table if not exists students(
     id int not null primary key auto_increment,
+    el1 int not null,
     code int  unique,
     name varchar(255) not null,
     status varchar(50) not null);
