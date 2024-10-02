@@ -3,6 +3,8 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.sql.Date;
+
 @Entity
 @Data
 @Table(name="regular_exam")
@@ -16,16 +18,16 @@ public class RegularTest {
     @JoinColumn(name="school_id")
     private School school;
 
-    @Column(name="term")//実施年度
-    private Integer term;
+    @Column(name="date")//実施日を保存する理由は転校を把握するため。正確な値でなくても構わない。
+    private Date date;
 
-    @Column(name="grade")
+    @Column(name="grade")//学年
     private Integer grade;
 
-    @Column(name="semester")
+    @Column(name="semester")//学期
     private Integer semester;
 
-    @Column(name="is_mid")
+    @Column(name="is_mid")//中間か期末か判定期末は0,中間は１
     private Integer isMid;
 
     @Column(name="japanese")

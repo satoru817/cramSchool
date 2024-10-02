@@ -3,13 +3,15 @@ package com.example.demo.controller;
 import com.example.demo.entity.RegularTest;
 import com.example.demo.entity.School;
 import com.example.demo.form.RegularTestForm;
-import com.example.demo.service.RegularTestResultService;
-import com.example.demo.service.RegularTestService;
-import com.example.demo.service.SchoolService;
-import com.example.demo.service.TermAndYearService;
+import com.example.demo.service.*;
+import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,48 +22,55 @@ public class RegularTestController {
     private RegularTestService regularTestService;
     private SchoolService schoolService;
     private TermAndYearService termAndYearService;
+    private RegularTestRegularTestFormConverter regularTestRegularTestFormConverter;
 
     public RegularTestController(RegularTestResultService regularTestResultService,
                                  RegularTestService regularTestService,
                                  SchoolService schoolService,
-                                 TermAndYearService termAndYearService){
+                                 TermAndYearService termAndYearService,
+                                 RegularTestRegularTestFormConverter regularTestRegularTestFormConverter){
         this.regularTestResultService = regularTestResultService;
         this.regularTestService = regularTestService;
         this.schoolService = schoolService;
         this.termAndYearService = termAndYearService;
+        this.regularTestRegularTestFormConverter = regularTestRegularTestFormConverter;
     }
 
     //テスト作成画面
     @GetMapping("/regularTestCreate")
     public String createRegularTest(Model model){
-        RegularTestForm regularTestForm = new RegularTestForm();
-        regularTestForm.RegularTestForm100();//全てに100をデフォルトでセットする。
-        regularTestForm.setTerm(getTerm());
-        model.addAttribute("regularTestForm",regularTestForm);
+        if(!model.containsAttribute("regularTestForm")){
+            RegularTestForm regularTestForm = new RegularTestForm();
+            regularTestForm.initializeWithPerfectScores();//全てに100をデフォルトでセットする。
+            regularTestForm.setDate(termAndYearService.getTodayAsDate());
+            model.addAttribute("regularTestForm",regularTestForm);
+        }
+
         List<School> schoolList = schoolService.fetchAll();
         model.addAttribute("schoolList", schoolList);
         return "regularTest/createRegularTest";
     }
 
-
-
-
-
-    //現在の年度を取得する関数
-    public Integer getTerm(){
-        // 今年の4月1日を取得
-        LocalDate thisYearApril1 = LocalDate.now().withMonth(4).withDayOfMonth(1);
-
-        // 今日の日付を取得
-        LocalDate today = LocalDate.now();
-
-        int currentYear = LocalDate.now().getYear();
-
-        if(today.isBefore(thisYearApril1)){
-            return currentYear -1;
+    @PostMapping("/submitRegularTest")
+    public String submitRegularTest(@Validated RegularTestForm regularTestForm,
+                                    BindingResult result,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model){
+        if(result.hasErrors()){
+            redirectAttributes.addFlashAttribute("regularTestForm",regularTestForm);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
+            + Conventions.getVariableName(regularTestForm));
+            return "redirect:/regularTestCreate";
         }else{
-            return currentYear;
+            regularTestService.save(regularTestRegularTestFormConverter.RegularTestFormToRegularTest(regularTestForm));
+            return "redirect:/registerSchool";
         }
 
     }
+
+
+
+
+
+
 }

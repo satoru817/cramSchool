@@ -16,6 +16,10 @@ public class TermAndYearService {
         return LocalDate.now();
     }
 
+    public Date getTodayAsDate(){
+        return new Date();
+    }
+
     public LocalDate getThisYearApril1(){
         return LocalDate.now().withMonth(4).withDayOfMonth(1);
     }
@@ -62,6 +66,24 @@ public class TermAndYearService {
         }else{
             return currentYear + 1 - grade;
         }
+    }
+
+    //現在の年度を取得する関数
+    public Integer getTerm(){
+        // 今年の4月1日を取得
+        LocalDate thisYearApril1 = this.getThisYearApril1();
+
+        // 今日の日付を取得
+        LocalDate today = this.getToday();
+
+        int currentYear = this.getCurrentYear();
+
+        if(today.isBefore(thisYearApril1)){
+            return currentYear -1;
+        }else{
+            return currentYear;
+        }
+
     }
 
 

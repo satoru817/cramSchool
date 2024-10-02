@@ -2,23 +2,103 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>テスト登録フォーム</title>
 </head>
 <body>
-    <h2>テスト登録フォーム</h2>
-    <form th:object="${regularTest}">
-        <label for="schoolId">実施学校名</label>
-        <div th:each="school:${schoolList}">
-            <label>
-                <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" >
-                <span th:text="${school.getName()}"></span>
-            </label>
-        </div>
-        <label for ="term">年度</label>
-        <input type="number" th:field="*{term}">
-        <label for ="grade">学年</label>
-        <label input type="radio" th:field="*{grade}" value="1"></label>
-    </form>
+<h2>テスト登録フォーム</h2>
+<form th:action="@{/submitRegularTest}" th:object="${regularTestForm}" method="post">
+    <label for="schoolId">実施学校名</label>
+    <div th:each="school : ${schoolList}">
+        <label>
+            <input type="radio" th:field="*{schoolId}" th:value="${school.id}" required>
+            <span th:text="${school.name}"></span>
+        </label>
+    </div>
+    <div th:if="${#fields.hasErrors('schoolId')}" th:errors="*{schoolId}" style="color:red;"></div>
 
+    <br>
+    <label for="date">実施日</label>
+    <input type="date" th:field="*{date}" th:value="${#dates.format(regularTestForm.date, 'yyyy-MM-dd')}" required>
+    <div th:if="${#fields.hasErrors('date')}" th:errors="*{date}" style="color:red;"></div>
+
+    <br>
+    <label for="grade">学年</label>
+    <label>
+        <input type="radio" th:field="*{grade}" value="1" required>中学1年生
+    </label>
+    <label>
+        <input type="radio" th:field="*{grade}" value="2">中学2年生
+    </label>
+    <label>
+        <input type="radio" th:field="*{grade}" value="3">中学3年生
+    </label>
+    <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" style="color:red;"></div>
+
+    <br>
+
+    <label for="semester">学期</label>
+    <label>
+        <input type="radio" th:field="*{semester}" value="1">1学期
+    </label>
+    <label>
+        <input type="radio" th:field="*{semester}" value="2">2学期
+    </label>
+    <label>
+        <input type="radio" th:field="*{semester}" value="3">3学期
+    </label>
+
+    <br>
+
+    <label for="isMid">中間か期末</label>
+    <label>
+        <input type="radio" th:field="*{isMid}" value="0" required>中間
+    </label>
+    <label>
+        <input type="radio" th:field="*{isMid}" value="1">期末
+    </label>
+    <div th:if="${#fields.hasErrors('isMid')}" th:errors="*{isMid}" style="color:red;"></div>
+
+    <br>
+    <h3>科目別満点</h3>
+
+    <label for="japanese">国語</label>
+    <input type="number" th:field="*{japanese}" min="0" required>
+    <div th:if="${#fields.hasErrors('japanese')}" th:errors="*{japanese}" style="color:red;"></div>
+
+    <label for="math">数学</label>
+    <input type="number" th:field="*{math}" min="0" required>
+    <div th:if="${#fields.hasErrors('math')}" th:errors="*{math}" style="color:red;"></div>
+
+    <label for="english">英語</label>
+    <input type="number" th:field="*{english}" min="0"  required>
+    <div th:if="${#fields.hasErrors('english')}" th:errors="*{english}" style="color:red;"></div>
+
+    <label for="science">理科</label>
+    <input type="number" th:field="*{science}" min="0"  required>
+    <div th:if="${#fields.hasErrors('science')}" th:errors="*{science}" style="color:red;"></div>
+
+    <label for="social">社会</label>
+    <input type="number" th:field="*{social}" min="0"  required>
+    <div th:if="${#fields.hasErrors('social')}" th:errors="*{social}" style="color:red;"></div>
+
+    <label for="music">音楽</label>
+    <input type="number" th:field="*{music}" min="0"  required>
+    <div th:if="${#fields.hasErrors('music')}" th:errors="*{music}" style="color:red;"></div>
+
+    <label for="art">美術</label>
+    <input type="number" th:field="*{art}" min="0" required>
+    <div th:if="${#fields.hasErrors('art')}" th:errors="*{art}" style="color:red;"></div>
+
+    <label for="tech">技術</label>
+    <input type="number" th:field="*{tech}" min="0" required>
+    <div th:if="${#fields.hasErrors('tech')}" th:errors="*{tech}" style="color:red;"></div>
+
+    <label for="pe">体育</label>
+    <input type="number" th:field="*{pe}" min="0"  required>
+    <div th:if="${#fields.hasErrors('pe')}" th:errors="*{pe}" style="color:red;"></div>
+
+    <br>
+    <button type="submit">送信</button>
+</form>
 </body>
 </html>
