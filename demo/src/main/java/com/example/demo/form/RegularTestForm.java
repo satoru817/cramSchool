@@ -13,6 +13,7 @@ public class RegularTestForm {
 
     private Integer term;
 
+    private Integer grade;
 
     private Integer semester;
 

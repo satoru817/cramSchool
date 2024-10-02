@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 import com.example.demo.entity.SchoolStudent;
 import com.example.demo.service.SchoolStudentService;
+import com.example.demo.service.TermAndYearService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import com.example.demo.entity.School;
@@ -35,19 +36,17 @@ public class StudentController {
     private StudentService studentService;
     private SchoolService schoolService;
     private SchoolStudentService schoolStudentService;
+    private TermAndYearService termAndYearService;
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    String strDate = "9999-12-31";
-    Date biggestDate = dateFormat.parse(strDate);
 
-    Date smallestDate = new Date(0);
     ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小１","小２","小３","小４","小５","小６","中１","中２","中３","高１","高２","高３"));
     //これは順番付きの配列
 
-    public StudentController(StudentService studentService, SchoolService schoolService,SchoolStudentService schoolStudentService) throws ParseException {
+    public StudentController(TermAndYearService termAndYearService, StudentService studentService, SchoolService schoolService, SchoolStudentService schoolStudentService) throws ParseException {
         this.studentService = studentService;
         this.schoolService = schoolService;
         this.schoolStudentService = schoolStudentService;
+        this.termAndYearService = termAndYearService;
     }
 
     //書き換え不要
@@ -83,7 +82,7 @@ public class StudentController {
             student.setName(studentForm.getName());
             student.setStatus(studentForm.getStatus());
 
-            student.setEl1(getWhenEnteredElementarySchool(studentForm.getGrade()));
+            student.setEl1(termAndYearService.getWhenEnteredElementarySchool(studentForm.getGrade()));
 
             studentService.save(student);
 
@@ -92,8 +91,8 @@ public class StudentController {
 
             schoolStudent.setStudent(student);
             schoolStudent.setSchool(school);
-            schoolStudent.setCreatedAt(smallestDate);
-            schoolStudent.setChangedAt(biggestDate);
+            schoolStudent.setCreatedAt(termAndYearService.minDate);
+            schoolStudent.setChangedAt(termAndYearService.maxDate);
 
             schoolStudentService.save(schoolStudent);
 
@@ -168,7 +167,7 @@ public class StudentController {
                 Long studentCodeL = Long.valueOf(studentCode);
                 String grade = record.get("学年");
                 Integer gradeI = gradeList.indexOf(grade);
-                Integer el1 = getWhenEnteredElementarySchool(gradeI);
+                Integer el1 = termAndYearService.getWhenEnteredElementarySchool(gradeI);
                 String schoolName = record.get("在学校名");
                 String course = record.get("所属コース");
                 String lastName = record.get("生徒名前(姓)");
@@ -215,10 +214,10 @@ public class StudentController {
                     studentService.save(student);
 
                     schoolStudent.setStudent(student);
-                    schoolStudent.setCreatedAt(smallestDate);
+                    schoolStudent.setCreatedAt(termAndYearService.minDate);
 
 
-                    schoolStudent.setChangedAt(biggestDate);
+                    schoolStudent.setChangedAt(termAndYearService.maxDate);
 
                     schoolStudentService.save(schoolStudent);
 
@@ -265,7 +264,7 @@ public class StudentController {
             newSchoolStudent.setStudent(student);
             newSchoolStudent.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
             newSchoolStudent.setCreatedAt(new Date());
-            newSchoolStudent.setChangedAt(biggestDate);
+            newSchoolStudent.setChangedAt(termAndYearService.maxDate);
             schoolStudentService.save(newSchoolStudent);//新しいSchoolStudentオブジェクトをDBに保存する
 
             redirectAttributes.addFlashAttribute("editSuccess");
@@ -273,30 +272,11 @@ public class StudentController {
         }
     }
 
-    //Studentのel1から学年(1から12)を取得する
-    public Integer getSchoolGrade(Student student){
-        // 今年の4月1日を取得
-        LocalDate thisYearApril1 = LocalDate.now().withMonth(4).withDayOfMonth(1);
 
-        // 今日の日付を取得
-        LocalDate today = LocalDate.now();
-
-        int currentYear = LocalDate.now().getYear();
-
-        int grade;
-
-        if(today.isBefore(thisYearApril1)){
-            grade = currentYear - student.getEl1();
-        }else{
-            grade = currentYear - student.getEl1() +1;
-        }
-
-        return grade;
-    }
 
     public StudentShow convertStudentToStudentShow(Student student){
 
-        String schoolGrade = gradeList.get(getSchoolGrade(student));
+        String schoolGrade = gradeList.get(termAndYearService.getSchoolGrade(student));
 
         return new StudentShow(student.getId(),student.getName(),student.getCode(),schoolGrade,student.getStatus(),getSchoolNowYouBelongTo(student).getName());
 
@@ -316,7 +296,7 @@ public class StudentController {
 
     //書き換え完了
     public StudentForm convertStudentToStudentForm(Student student){
-        return new StudentForm(student.getCode(),getSchoolGrade(student),student.getName(),student.getStatus(),getSchoolNowYouBelongTo(student).getId());
+        return new StudentForm(student.getCode(),termAndYearService.getSchoolGrade(student),student.getName(),student.getStatus(),getSchoolNowYouBelongTo(student).getId());
 
     }
 
@@ -328,7 +308,7 @@ public class StudentController {
         student.setCode(studentForm.getCode());
         student.setName(studentForm.getName());
         student.setStatus(studentForm.getStatus());
-        student.setEl1(getWhenEnteredElementarySchool(studentForm.getGrade()));
+        student.setEl1(termAndYearService.getWhenEnteredElementarySchool(studentForm.getGrade()));
 
         return student;
     }
@@ -342,24 +322,7 @@ public class StudentController {
         return schoolStudentService.getSchoolStudentsByStudentIdOrdered(student.getId()).getLast().getSchool();
     }
 
-    //小学一年生は高校3年生は12の数値から小学校入学時(3/31)時点の西暦を算出する関数
-    public int getWhenEnteredElementarySchool(int grade){
 
-        // 今年の4月1日を取得
-        LocalDate thisYearApril1 = LocalDate.now().withMonth(4).withDayOfMonth(1);
-
-        // 今日の日付を取得
-        LocalDate today = LocalDate.now();
-
-        //現在の年を取得
-        int currentYear = LocalDate.now().getYear();
-
-        if(today.isBefore(thisYearApril1)){
-            return currentYear - grade;
-        }else{
-            return currentYear + 1 - grade;
-        }
-    }
 
 
 }

@@ -23,6 +23,7 @@ create table if not exists regular_exam(
 id int not null primary key auto_increment,
 school_id int not null,
 term int not null,
+grade int not null,
 semester int not null,
 is_mid tinyint(1) not null,
 japanese int ,

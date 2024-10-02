@@ -19,6 +19,9 @@ public class RegularTest {
     @Column(name="term")//実施年度
     private Integer term;
 
+    @Column(name="grade")
+    private Integer grade;
+
     @Column(name="semester")
     private Integer semester;
 

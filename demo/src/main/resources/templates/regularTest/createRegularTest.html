@@ -15,7 +15,9 @@
             </label>
         </div>
         <label for ="term">年度</label>
-        <input type=""
+        <input type="number" th:field="*{term}">
+        <label for ="grade">学年</label>
+        <label input type="radio" th:field="*{grade}" value="1"></label>
     </form>
 
 </body>

@@ -6,6 +6,7 @@ import com.example.demo.form.RegularTestForm;
 import com.example.demo.service.RegularTestResultService;
 import com.example.demo.service.RegularTestService;
 import com.example.demo.service.SchoolService;
+import com.example.demo.service.TermAndYearService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,16 @@ public class RegularTestController {
     private RegularTestResultService regularTestResultService;
     private RegularTestService regularTestService;
     private SchoolService schoolService;
+    private TermAndYearService termAndYearService;
 
     public RegularTestController(RegularTestResultService regularTestResultService,
-                                 RegularTestService regularTestService){
+                                 RegularTestService regularTestService,
+                                 SchoolService schoolService,
+                                 TermAndYearService termAndYearService){
         this.regularTestResultService = regularTestResultService;
         this.regularTestService = regularTestService;
+        this.schoolService = schoolService;
+        this.termAndYearService = termAndYearService;
     }
 
     //テスト作成画面
