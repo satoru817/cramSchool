@@ -57,15 +57,5 @@ public class RegularTest {
     @Column(name="pe")
     private Integer pe;
 
-    public void RegularTest100() {
-        this.japanese = 100;
-        this.math = 100;
-        this.english = 100;
-        this.science = 100;
-        this.social = 100;
-        this.music = 100;
-        this.art = 100;
-        this.tech = 100;
-        this.pe = 100;
-    }
+
 }

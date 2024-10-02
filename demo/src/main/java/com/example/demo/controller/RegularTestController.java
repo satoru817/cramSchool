@@ -42,7 +42,7 @@ public class RegularTestController {
         if(!model.containsAttribute("regularTestForm")){
             RegularTestForm regularTestForm = new RegularTestForm();
             regularTestForm.initializeWithPerfectScores();//全てに100をデフォルトでセットする。
-            regularTestForm.setDate(termAndYearService.getTodayAsDate());
+            regularTestForm.setDate(termAndYearService.getTodayAsLocalDate());
             model.addAttribute("regularTestForm",regularTestForm);
         }
 
@@ -56,15 +56,24 @@ public class RegularTestController {
                                     BindingResult result,
                                     RedirectAttributes redirectAttributes,
                                     Model model){
-        if(result.hasErrors()){
-            redirectAttributes.addFlashAttribute("regularTestForm",regularTestForm);
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
-            + Conventions.getVariableName(regularTestForm));
+        System.out.println(regularTestForm);
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("regularTestForm", regularTestForm);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + Conventions.getVariableName(regularTestForm));
             return "redirect:/regularTestCreate";
-        }else{
-            regularTestService.save(regularTestRegularTestFormConverter.RegularTestFormToRegularTest(regularTestForm));
+        } else {
+            System.out.println("Saving RegularTest: " + regularTestForm);
+            RegularTest regularTest = regularTestRegularTestFormConverter.RegularTestFormToRegularTest(regularTestForm);
+            try {
+                regularTestService.save(regularTest);
+                System.out.println("Saved RegularTest successfully!");
+            } catch (Exception e) {
+                System.err.println("Error saving RegularTest: " + e.getMessage());
+                e.printStackTrace();
+            }
             return "redirect:/registerSchool";
         }
+
 
     }
 

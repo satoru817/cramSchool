@@ -3,6 +3,7 @@ package com.example.demo.form;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -12,12 +13,13 @@ public class RegularTestForm {
     private Integer schoolId;
 
     @NotNull(message = "実施日を選択してください")
-    private Date date;
+    private LocalDate date;
 
     @Min(value = 1, message = "学年は1以上である必要があります")
     @Max(value = 3, message = "学年は3以下である必要があります")
     private Integer grade;
 
+    @NotNull(message="学期を選んでください")
     private Integer semester;
 
     @NotNull(message = "中間か期末を選択してください")

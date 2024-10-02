@@ -5,6 +5,8 @@ import com.example.demo.entity.School;
 import com.example.demo.form.RegularTestForm;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+
 @Service
 public class RegularTestRegularTestFormConverter {
     private final SchoolService schoolService;
@@ -20,7 +22,7 @@ public class RegularTestRegularTestFormConverter {
         // Create a new RegularTest entity and set its properties
         RegularTest regularTest = new RegularTest();
         regularTest.setSchool(school);
-        regularTest.setDate(new java.sql.Date(regularTestForm.getDate().getTime()));
+        regularTest.setDate(Date.valueOf(regularTestForm.getDate()));
         regularTest.setGrade(regularTestForm.getGrade());
         regularTest.setSemester(regularTestForm.getSemester());
         regularTest.setIsMid(regularTestForm.getIsMid());

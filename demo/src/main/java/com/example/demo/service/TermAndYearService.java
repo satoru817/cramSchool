@@ -20,6 +20,10 @@ public class TermAndYearService {
         return new Date();
     }
 
+    public LocalDate getTodayAsLocalDate(){
+        return LocalDate.now();
+    }
+
     public LocalDate getThisYearApril1(){
         return LocalDate.now().withMonth(4).withDayOfMonth(1);
     }
