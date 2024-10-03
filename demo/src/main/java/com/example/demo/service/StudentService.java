@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.School;
 import com.example.demo.entity.Student;
 import com.example.demo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,9 @@ public class StudentService {
 
     public Student findByCode(Long code){
         return studentRepository.getByCode(code);
+    }
+
+    public List<Student> findAllBySchoolAndEl1(School school, Integer el1){
+        return studentRepository.findAllBySchoolAndEl1(school,el1);
     }
 }

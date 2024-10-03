@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.RegularTest;
+import com.example.demo.entity.RegularTestResult;
 import com.example.demo.entity.School;
+import com.example.demo.entity.Student;
 import com.example.demo.form.RegularTestForm;
+import com.example.demo.form.TestResultForm;
 import com.example.demo.service.*;
 import com.example.demo.show.RegularTestShow;
 import org.springframework.core.Conventions;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -24,6 +28,7 @@ public class RegularTestController {
     private SchoolService schoolService;
     private TermAndYearService termAndYearService;
     private RegularTestConverter regularTestConverter;
+    private StudentService studentService;
 
     public RegularTestController(RegularTestResultService regularTestResultService,
                                  RegularTestService regularTestService,
@@ -132,6 +137,28 @@ public class RegularTestController {
 
 
     }
+
+    @GetMapping("/regularTestResultEdit/{id}")
+    public String regularTestResultEdit(@PathVariable("id")Integer regularTestId,
+                                        Model model){
+        RegularTest regularTest = regularTestService.fetchById(regularTestId);
+        //regularTestが実施された日にregularTestが実施された学校に属し、regularTestが実施された学年である生徒を探し出す必要がある。こうする
+        //つまり最新を探すのではなく日付で挟むのは、過去のデータを閲覧する際に使えなくてはならないからである。
+        //List<Student> studentList = studentService.findAllBySchoolAndEl1(regularTest.getSchool(),termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()));
+        //List<RegularTestResultForm>のオブジェクトを作成してviewに渡す必要がある。
+        List<TestResultForm> testResultFormList = new ArrayList<>();
+        for(Student student:studentList){
+            TestResultForm testResultForm = new TestResultForm(student);
+            testResultFormList.add(testResultForm);
+        }
+
+        model.addAttribute("regularTestId",regularTestId);
+        model.addAttribute("testResultFormList",testResultFormList);
+        model.addAttribute("regularTestShow",regularTestConverter.regularTestToRegularTestShow(regularTestService.fetchById(regularTestId)));
+
+        return "test/testResultEdit";
+    }
+
 
 
 

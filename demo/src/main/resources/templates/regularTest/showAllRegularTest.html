@@ -15,6 +15,7 @@
     <span th:if="${test.isMid == 0}" th:text="'期末テスト'"></span>
     <span th:if="${test.isMid == 1}" th:text="'中間テスト'"></span>
     <span><a th:href="@{/regularTestEdit/__${test.regularTestId}__}">テスト内容編集</a></span>
+    <span><a th:href="@{/regularTestResultEdit/__${test.regularTestId}__}">テスト結果確認・入力・編集</a></span>
     <span th:text="'Test ID: ' + ${test.regularTestId}"></span>
     <hr>
   </li>
