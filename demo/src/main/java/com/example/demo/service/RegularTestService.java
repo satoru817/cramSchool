@@ -4,6 +4,8 @@ import com.example.demo.entity.RegularTest;
 import com.example.demo.repository.RegularTestRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RegularTestService {
     private RegularTestRepository regularTestRepository;
@@ -13,5 +15,13 @@ public class RegularTestService {
 
     public void save(RegularTest regularTest){
         regularTestRepository.save(regularTest);
+    }
+
+    public List<RegularTest> fetchAll(){
+        return regularTestRepository.findAll();
+    }
+
+    public RegularTest fetchById(Integer id){
+        return regularTestRepository.getById(id);
     }
 }

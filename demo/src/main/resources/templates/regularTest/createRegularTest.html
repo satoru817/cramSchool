@@ -2,15 +2,21 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>テスト登録フォーム</title>
+    <title th:unless="${isEdit}">テスト登録フォーム</title>
+    <title th:if="${isEdit}">テスト編集フォーム</title>
 </head>
 <body>
-<h2>テスト登録フォーム</h2>
-<form th:action="@{/submitRegularTest}" th:object="${regularTestForm}" method="post">
+<div th:replace="~{fragment::header}"></div>
+<h2 th:unless="${isEdit}">テスト登録フォーム</h2>
+<h2 th:if="${isEdit}">テスト編集フォーム</h2>
+<form th:action="${isEdit == null ? '/submitRegularTest' : (isEdit == 1 ? '/updateRegularTest/' + regularTestId : '')}"
+      th:object="${regularTestForm}"
+      method="post">
+
     <label for="schoolId">実施学校名</label>
     <div th:each="school : ${schoolList}">
         <label>
-            <input type="radio" th:field="*{schoolId}" th:value="${school.id}" required>
+            <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" required>
             <span th:text="${school.name}"></span>
         </label>
     </div>
@@ -18,7 +24,8 @@
 
     <br>
     <label for="date">実施日</label>
-    <input type="date" th:field="*{date}"  required>
+    <input type="date" th:field="*{date}"   required>
+
 
     <div th:if="${#fields.hasErrors('date')}" th:errors="*{date}" style="color:red;"></div>
 
@@ -99,7 +106,8 @@
     <div th:if="${#fields.hasErrors('pe')}" th:errors="*{pe}" style="color:red;"></div>
 
     <br>
-    <button type="submit">送信</button>
+    <button th:unless="${isEdit}" type="submit">新規登録</button>
+    <button th:if="${isEdit}" type="submit">編集結果登録</button>
 </form>
 </body>
 </html>

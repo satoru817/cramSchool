@@ -2,6 +2,7 @@ package com.example.demo.form;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -13,7 +14,8 @@ public class RegularTestForm {
     private Integer schoolId;
 
     @NotNull(message = "実施日を選択してください")
-    private LocalDate date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")//date picker利用の為にこうしている
+    private Date date;
 
     @Min(value = 1, message = "学年は1以上である必要があります")
     @Max(value = 3, message = "学年は3以下である必要があります")

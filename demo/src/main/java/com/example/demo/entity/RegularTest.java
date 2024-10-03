@@ -12,7 +12,7 @@ public class RegularTest {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer regularTestId;
 
     @ManyToOne
     @JoinColumn(name="school_id")

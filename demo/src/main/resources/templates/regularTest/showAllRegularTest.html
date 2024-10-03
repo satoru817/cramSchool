@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Regular Tests</title>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<h1>定期テスト</h1>
+<ul>
+  <li th:each="test : ${regularTestShowList}">
+    <span th:text="${test.schoolName}"></span>
+    <span th:text="${test.grade}+'年生'"></span>
+    <span th:text="${test.semester}+'学期'"></span>
+    <span th:if="${test.isMid == 0}" th:text="'期末テスト'"></span>
+    <span th:if="${test.isMid == 1}" th:text="'中間テスト'"></span>
+    <span><a th:href="@{/regularTestEdit/__${test.regularTestId}__}">テスト内容編集</a></span>
+    <span th:text="'Test ID: ' + ${test.regularTestId}"></span>
+    <hr>
+  </li>
+</ul>
+</body>
+</html>
