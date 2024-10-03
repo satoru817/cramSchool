@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Student;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -8,9 +9,11 @@ import java.util.Date;
 
 @Service
 public class TermAndYearService {
-    public final Date maxDate = new Date(Long.MAX_VALUE);
-    public final Date minDate = new Date(0);
+    public final LocalDate maxLocalDate = LocalDate.MAX;
+    public final LocalDate minLocalDate = LocalDate.MIN;
 
+    public final java.sql.Date maxSqlDate = java.sql.Date.valueOf("9999-12-31");
+    public final java.sql.Date minSqlDate = java.sql.Date.valueOf("1970-01-01");
     //method to get today's date dynamically
     public LocalDate getToday(){
         return LocalDate.now();

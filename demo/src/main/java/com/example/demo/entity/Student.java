@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -27,5 +28,7 @@ public class Student {
     @Column(name="status")
     private String status;
 
+    @OneToMany(mappedBy = "student")
+    private List<SchoolStudent> schoolStudents; // Connection to SchoolStudent
 
 }

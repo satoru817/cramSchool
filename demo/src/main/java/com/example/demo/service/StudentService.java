@@ -5,6 +5,7 @@ import com.example.demo.entity.Student;
 import com.example.demo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,7 +30,8 @@ public class StudentService {
         return studentRepository.getByCode(code);
     }
 
-    public List<Student> findAllBySchoolAndEl1(School school, Integer el1){
-        return studentRepository.findAllBySchoolAndEl1(school,el1);
+
+    public List<Student> getStudentsByEl1AndDateRangeAndSchoolId(Integer el1, LocalDate date, Integer schoolId) {
+        return studentRepository.findStudentsByEl1AndDateRangeAndSchoolId(el1, date, schoolId);
     }
 }

@@ -70,7 +70,7 @@ public class StudentController {
                                     RedirectAttributes redirectAttributes) {
         if (!bindingResult.hasErrors()) {
 
-            Long code = Long.valueOf(studentForm.getCode());
+            Long code = studentForm.getCode();
             Integer schoolId = studentForm.getSchoolId();
             School school = schoolService.fetchById(schoolId);
 
@@ -89,8 +89,8 @@ public class StudentController {
 
             schoolStudent.setStudent(student);
             schoolStudent.setSchool(school);
-            schoolStudent.setCreatedAt(termAndYearService.minDate);
-            schoolStudent.setChangedAt(termAndYearService.maxDate);
+            schoolStudent.setCreatedAt(termAndYearService.minSqlDate);
+            schoolStudent.setChangedAt(termAndYearService.maxSqlDate);
 
             schoolStudentService.save(schoolStudent);
 
@@ -212,10 +212,10 @@ public class StudentController {
                     studentService.save(student);
 
                     schoolStudent.setStudent(student);
-                    schoolStudent.setCreatedAt(termAndYearService.minDate);
+                    schoolStudent.setCreatedAt(termAndYearService.minSqlDate);
 
 
-                    schoolStudent.setChangedAt(termAndYearService.maxDate);
+                    schoolStudent.setChangedAt(termAndYearService.maxSqlDate);
 
                     schoolStudentService.save(schoolStudent);
 
@@ -255,14 +255,14 @@ public class StudentController {
 
             //このあとのコードで、以前のschoolstudentオブジェクトの最新のものを更新し、新たにschoolstudentオブジェクトを作成する。
             SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(id).getLast();
-            schoolStudent.setChangedAt(new Date());//現在の日付をChangedAtに登録する。これはうまくいっている
+            schoolStudent.setChangedAt((java.sql.Date) new Date());//現在の日付をChangedAtに登録する。これはうまくいっている
             schoolStudentService.save(schoolStudent);//save the updated SchoolStudent
 
             SchoolStudent newSchoolStudent = new SchoolStudent();
             newSchoolStudent.setStudent(student);
             newSchoolStudent.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
-            newSchoolStudent.setCreatedAt(new Date());
-            newSchoolStudent.setChangedAt(termAndYearService.maxDate);
+            newSchoolStudent.setCreatedAt((java.sql.Date) new Date());
+            newSchoolStudent.setChangedAt(termAndYearService.maxSqlDate);
             schoolStudentService.save(newSchoolStudent);//新しいSchoolStudentオブジェクトをDBに保存する
 
             redirectAttributes.addFlashAttribute("editSuccess");

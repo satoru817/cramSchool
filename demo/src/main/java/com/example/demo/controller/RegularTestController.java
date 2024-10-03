@@ -34,12 +34,14 @@ public class RegularTestController {
                                  RegularTestService regularTestService,
                                  SchoolService schoolService,
                                  TermAndYearService termAndYearService,
-                                 RegularTestConverter regularTestConverter){
+                                 RegularTestConverter regularTestConverter,
+                                 StudentService studentService){
         this.regularTestResultService = regularTestResultService;
         this.regularTestService = regularTestService;
         this.schoolService = schoolService;
         this.termAndYearService = termAndYearService;
         this.regularTestConverter = regularTestConverter;
+        this.studentService = studentService;
     }
 
     //テスト作成画面
@@ -146,6 +148,7 @@ public class RegularTestController {
         //つまり最新を探すのではなく日付で挟むのは、過去のデータを閲覧する際に使えなくてはならないからである。
         //List<Student> studentList = studentService.findAllBySchoolAndEl1(regularTest.getSchool(),termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()));
         //List<RegularTestResultForm>のオブジェクトを作成してviewに渡す必要がある。
+        List<Student> studentList = studentService.getStudentsByEl1AndDateRangeAndSchoolId(termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()), regularTest.getDate().toLocalDate(),regularTest.getSchool().getId());
         List<TestResultForm> testResultFormList = new ArrayList<>();
         for(Student student:studentList){
             TestResultForm testResultForm = new TestResultForm(student);
