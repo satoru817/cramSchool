@@ -255,13 +255,13 @@ public class StudentController {
 
             //このあとのコードで、以前のschoolstudentオブジェクトの最新のものを更新し、新たにschoolstudentオブジェクトを作成する。
             SchoolStudent schoolStudent = schoolStudentService.getSchoolStudentsByStudentIdOrdered(id).getLast();
-            schoolStudent.setChangedAt((java.sql.Date) new Date());//現在の日付をChangedAtに登録する。これはうまくいっている
+            schoolStudent.setChangedAt(termAndYearService.getSqlToday());//これだめ！改修した！
             schoolStudentService.save(schoolStudent);//save the updated SchoolStudent
 
             SchoolStudent newSchoolStudent = new SchoolStudent();
             newSchoolStudent.setStudent(student);
             newSchoolStudent.setSchool(schoolService.fetchById(studentForm.getSchoolId()));
-            newSchoolStudent.setCreatedAt((java.sql.Date) new Date());
+            newSchoolStudent.setCreatedAt(termAndYearService.getSqlToday());
             newSchoolStudent.setChangedAt(termAndYearService.maxSqlDate);
             schoolStudentService.save(newSchoolStudent);//新しいSchoolStudentオブジェクトをDBに保存する
 

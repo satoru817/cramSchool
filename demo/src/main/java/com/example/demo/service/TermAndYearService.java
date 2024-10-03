@@ -14,6 +14,11 @@ public class TermAndYearService {
 
     public final java.sql.Date maxSqlDate = java.sql.Date.valueOf("9999-12-31");
     public final java.sql.Date minSqlDate = java.sql.Date.valueOf("1970-01-01");
+
+    public java.sql.Date getSqlToday(){
+        return  new java.sql.Date(System.currentTimeMillis());
+
+    }
     //method to get today's date dynamically
     public LocalDate getToday(){
         return LocalDate.now();
