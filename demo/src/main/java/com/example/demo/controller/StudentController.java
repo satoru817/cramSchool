@@ -1,11 +1,9 @@
 package com.example.demo.controller;
-import com.example.demo.entity.SchoolStudent;
+import com.example.demo.entity.*;
 import com.example.demo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import com.example.demo.entity.School;
-import com.example.demo.entity.Student;
 import com.example.demo.show.StudentShow;
 import com.example.demo.form.StudentForm;
 
@@ -35,6 +33,7 @@ public class StudentController {
     private final SchoolStudentService schoolStudentService;
     private final TermAndYearService termAndYearService;
     private final StatusService statusService;
+    private final StatusStudentService statusStudentService;
 
 
     ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小１","小２","小３","小４","小５","小６","中１","中２","中３","高１","高２","高３"));
@@ -42,12 +41,15 @@ public class StudentController {
 
 
     //書き換え不要
+    @Transactional
     @GetMapping("/studentRegister")
     public String studentRegister_g(Model model) {
         if (!model.containsAttribute("studentForm")) {
             StudentForm studentForm = new StudentForm();
             model.addAttribute("studentForm", studentForm);
         }
+        List<Status> statusList = statusService.findAll();
+        model.addAttribute("statusList",statusList);
 
         List<School> schoolList = schoolService.fetchAll();
         model.addAttribute("schoolList", schoolList);
@@ -88,6 +90,14 @@ public class StudentController {
 
             schoolStudentService.save(schoolStudent);
 
+            //StatusStudentオブジェクトの生成とDBへの保存
+            StatusStudent statusStudent = new StatusStudent();
+            statusStudent.setStudent(student);
+            statusStudent.setStatus(statusService.getStatusById(studentForm.getStatusId()));
+            statusStudent.setCreatedAt(termAndYearService.minSqlDate);
+            statusStudent.setChangedAt(termAndYearService.maxSqlDate);
+            statusStudentService.save(statusStudent);
+
             return "redirect:/studentShow";
 
         } else {
@@ -104,8 +114,7 @@ public class StudentController {
     @GetMapping("/studentShow")
     public String studentShow_g(Model model) {
         List<Student> studentList = studentService.fetchAll();
-
-        List<StudentShow> studentShows = convertToStudentShowList(studentList);//これを書き換えなければ->owatta
+        List<StudentShow> studentShows = convertToStudentShowList(studentList);//これを書き換えなければstudentshowを書き換えないと
 
         model.addAttribute("studentShows", studentShows);
 
@@ -122,6 +131,9 @@ public class StudentController {
             StudentForm studentForm = convertStudentToStudentForm(student);//このメソッドをどうにかする
             model.addAttribute("studentForm", studentForm);
         }
+
+        List<Status> statusList = statusService.findAll();
+        model.addAttribute("statusList",statusList);
 
         List<School> schoolList = schoolService.fetchAll();
         model.addAttribute("schoolList", schoolList);
@@ -259,6 +271,18 @@ public class StudentController {
             newSchoolStudent.setChangedAt(termAndYearService.maxSqlDate);
             schoolStudentService.save(newSchoolStudent);//新しいSchoolStudentオブジェクトをDBに保存する
 
+            StatusStudent  statusStudent = statusStudentService.getStatusStudentByStudentIdOrdered(id).getLast();
+            statusStudent.setChangedAt(termAndYearService.getSqlToday());
+            statusStudentService.save(statusStudent);
+
+            StatusStudent newStatusStudent = new StatusStudent();
+            newStatusStudent.setStudent(student);
+            newStatusStudent.setStatus(statusService.getStatusById(studentForm.getStatusId()));
+            newStatusStudent.setCreatedAt(termAndYearService.getSqlToday());
+            newStatusStudent.setChangedAt(termAndYearService.maxSqlDate);
+            statusStudentService.save(newStatusStudent);
+
+
             redirectAttributes.addFlashAttribute("editSuccess");
             return "redirect:/studentShow";
         }
@@ -269,8 +293,9 @@ public class StudentController {
     public StudentShow convertStudentToStudentShow(Student student){
 
         String schoolGrade = gradeList.get(termAndYearService.getSchoolGrade(student));
+        String status = getStatusNowYouBelongTo(student).getName();
 
-        return new StudentShow(student.getId(),student.getName(),student.getCode(),schoolGrade,getSchoolNowYouBelongTo(student).getName());
+        return new StudentShow(student.getId(),student.getName(),student.getCode(),schoolGrade,status,getSchoolNowYouBelongTo(student).getName());
 
 
     }
@@ -288,8 +313,8 @@ public class StudentController {
 
     //書き換え完了
     public StudentForm convertStudentToStudentForm(Student student){
-        return new StudentForm(student.getCode(),termAndYearService.getSchoolGrade(student),student.getName(),getSchoolNowYouBelongTo(student).getId());
-
+        return new StudentForm(student.getCode(),termAndYearService.getSchoolGrade(student),student.getName(),getStatusNowYouBelongTo(student).getStatusId(),getSchoolNowYouBelongTo(student).getId());
+        //現在のstatusを取得するようにしないといけない。
     }
 
     //書き換え完了
@@ -312,6 +337,10 @@ public class StudentController {
     //新たに追加したmethod
     public School getSchoolNowYouBelongTo(Student student){
         return schoolStudentService.getSchoolStudentsByStudentIdOrdered(student.getId()).getLast().getSchool();
+    }
+
+    public Status getStatusNowYouBelongTo(Student student){
+        return statusStudentService.getStatusStudentByStudentIdOrdered(student.getId()).getLast().getStatus();
     }
 
 

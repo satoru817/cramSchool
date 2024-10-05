@@ -20,6 +20,15 @@
     </div>
     <!--ステータスをここで編集できるようにしたい-->
     <div>
+      <label for="statusId">ステータス</label>
+      <div th:each="status:${statusList}">
+        <label>
+          <input type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" >
+          <span th:text="${status.getName()}"></span>
+        </label>
+      </div>
+    </div>
+    <div>
       <label for="grade">現在の学年を選択してください。</label><br>
       <label>
         <input type="radio" th:field="*{grade}" value="1" >小学1年生
@@ -59,8 +68,9 @@
       <label>
         <input type="radio" th:field="*{grade}" value="12">高校3年生
       </label>
+      <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" style="color:red;"></div>
     </div>
-    <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" style="color:red;"></div>
+
     <hr>
     <label for="schoolId">所属学校名</label>
     <div th:each="school:${schoolList}">

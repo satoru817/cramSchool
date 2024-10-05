@@ -27,5 +27,8 @@ public class StatusService {
         statusRepository.deleteByStatusId(id);
     }
 
+    public Status getStatusById(Integer id){
+        return statusRepository.getReferenceById(id);
+    };
 
 }

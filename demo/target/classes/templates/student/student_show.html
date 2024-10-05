@@ -33,7 +33,7 @@
                 <td th:text="${student.getCode()}"></td>
                 <td th:text="${student.getName()}"></td>
                 <td th:text="${student.getGrade()}"></td>
-                <td >!status!</td><!--ここを書き換える必要がある-->
+                <td th:text="${student.getStatusName()}"></td>
                 <td th:text="${student.getSchoolName()}"></td>
                 <td><a th:href="@{/studentEdit/__${student.getId()}__}" style="color:green;">生徒情報編集</a></td>
                 <td><a th:href="@{/student/delete/__${student.getId()}__}" style="color:red;">削除</a></td>

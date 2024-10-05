@@ -14,14 +14,16 @@ public class StatusStudent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer statusStudentId;
 
-    @Column(name="status_id")
-    private Integer statusId;
+    @ManyToOne
+    @JoinColumn(name="status_id")
+    private Status status;
 
-    @Column(name="student_id")
-    private Integer studentId;
+    @ManyToOne
+    @JoinColumn(name="student_id")
+    private Student student;
 
     @Column(name="created_at")
-    private Date cratedAt;
+    private Date createdAt;
 
     @Column(name="changed_at")
     private Date changedAt;

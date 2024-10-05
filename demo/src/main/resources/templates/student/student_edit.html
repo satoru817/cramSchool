@@ -20,6 +20,15 @@
         </div>
         <!--ステータスの編集を追加する必要がある-->
         <div>
+            <label for="statusId">ステータス</label>
+            <div th:each="status:${statusList}">
+                <label>
+                    <input type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" >
+                    <span th:text="${status.getName()}"></span>
+                </label>
+            </div>
+        </div>
+        <div>
             <label for="grade">現在の学年を選択してください。</label><br>
             <label>
                 <input type="radio" th:field="*{grade}" value="1" >小学1年生
