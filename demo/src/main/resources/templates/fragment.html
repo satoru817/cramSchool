@@ -12,7 +12,25 @@
             <a th:href="@{/registerSchool}">学校登録</a>
             <a th:href="@{/regularTestCreate}">定期テスト作成</a>
             <a th:href="@{/showAllRegularTest}">定期テスト一覧</a>
+            <a th:href="@{/editStatus}">ステータス編集</a>
         </nav>
+    </div>
+
+    <div th:fragment="status_selection">
+        <label for="status">ステータス</label><br>
+        <label>
+            <input type="radio" th:field="*{status}" value="experience" >体験
+        </label>
+        <label>
+            <input type="radio" th:field="*{status}" value="regular">本科
+        </label>
+        <label>
+            <input type="radio"  th:field="*{status}" value="seminar">講習
+        </label>
+        <label>
+            <input type="radio" th:field="*{status}" value="quit">退塾済み
+        </label>
+        <div th:if="${#fields.hasErrors('status')}" th:errors="*{status}" style="color:red;"></div>
     </div>
 
 </body>

@@ -25,9 +25,6 @@ public class Student {
     @Column(name="name")
     private String name;
 
-    @Column(name="status")
-    private String status;
-
     @OneToMany(mappedBy = "student")
     private List<SchoolStudent> schoolStudents; // Connection to SchoolStudent
 

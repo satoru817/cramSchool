@@ -1,15 +1,13 @@
 package com.example.demo.controller;
 import com.example.demo.entity.SchoolStudent;
-import com.example.demo.service.SchoolStudentService;
-import com.example.demo.service.TermAndYearService;
+import com.example.demo.service.*;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import com.example.demo.entity.School;
 import com.example.demo.entity.Student;
 import com.example.demo.show.StudentShow;
 import com.example.demo.form.StudentForm;
-import com.example.demo.service.SchoolService;
-import com.example.demo.service.StudentService;
 
 import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
@@ -29,23 +27,19 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 public class StudentController {
-    private StudentService studentService;
-    private SchoolService schoolService;
-    private SchoolStudentService schoolStudentService;
-    private TermAndYearService termAndYearService;
+    private final StudentService studentService;
+    private final SchoolService schoolService;
+    private final SchoolStudentService schoolStudentService;
+    private final TermAndYearService termAndYearService;
+    private final StatusService statusService;
 
 
     ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小１","小２","小３","小４","小５","小６","中１","中２","中３","高１","高２","高３"));
     //これは順番付きの配列
 
-    public StudentController(TermAndYearService termAndYearService, StudentService studentService, SchoolService schoolService, SchoolStudentService schoolStudentService) throws ParseException {
-        this.studentService = studentService;
-        this.schoolService = schoolService;
-        this.schoolStudentService = schoolStudentService;
-        this.termAndYearService = termAndYearService;
-    }
 
     //書き換え不要
     @GetMapping("/studentRegister")
@@ -78,7 +72,7 @@ public class StudentController {
             Student student = new Student();
             student.setCode(code);
             student.setName(studentForm.getName());
-            student.setStatus(studentForm.getStatus());
+
 
             student.setEl1(termAndYearService.getWhenEnteredElementarySchool(studentForm.getGrade()));
 
@@ -207,7 +201,7 @@ public class StudentController {
                             status = "本科";
                     }
 
-                    student.setStatus(status);
+
 
                     studentService.save(student);
 
@@ -276,7 +270,7 @@ public class StudentController {
 
         String schoolGrade = gradeList.get(termAndYearService.getSchoolGrade(student));
 
-        return new StudentShow(student.getId(),student.getName(),student.getCode(),schoolGrade,student.getStatus(),getSchoolNowYouBelongTo(student).getName());
+        return new StudentShow(student.getId(),student.getName(),student.getCode(),schoolGrade,getSchoolNowYouBelongTo(student).getName());
 
 
     }
@@ -294,7 +288,7 @@ public class StudentController {
 
     //書き換え完了
     public StudentForm convertStudentToStudentForm(Student student){
-        return new StudentForm(student.getCode(),termAndYearService.getSchoolGrade(student),student.getName(),student.getStatus(),getSchoolNowYouBelongTo(student).getId());
+        return new StudentForm(student.getCode(),termAndYearService.getSchoolGrade(student),student.getName(),getSchoolNowYouBelongTo(student).getId());
 
     }
 
@@ -305,7 +299,7 @@ public class StudentController {
         student.setId(id);
         student.setCode(studentForm.getCode());
         student.setName(studentForm.getName());
-        student.setStatus(studentForm.getStatus());
+
         student.setEl1(termAndYearService.getWhenEnteredElementarySchool(studentForm.getGrade()));
 
         return student;

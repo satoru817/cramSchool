@@ -14,7 +14,7 @@ public class StudentShow {
 
     private String grade;//文字列として学年を保持する
 
-    private String status;
+    //private String status;復活させたい
 
     private String schoolName;
 }
