@@ -2,20 +2,34 @@ create table if not exists schools(
     id int not null primary key auto_increment,
     name varchar(255) not null unique);
 
+create table if not exists status(
+    status_id int not null primary key auto_increment,
+    name varchar(50) not null UNIQUE);
+
 create table if not exists students(
     id int not null primary key auto_increment,
     el1 int not null,
     code int  unique,
-    name varchar(255) not null,
-    status varchar(50) not null);
+    name varchar(255) not null
+    );
 
 create table if not exists school_student(
 id int not null primary key auto_increment,
 school_id int not null,
 student_id int not null,
-created_at DATE NOT NULL DEFAULT CURDATE(),
-changed_at DATE  NOT NULL DEFAULT '9999-12-31',
+created_at DATE NOT NULL ,
+changed_at DATE  NOT NULL ,
  FOREIGN KEY (school_id) REFERENCES schools(id),
+ FOREIGN KEY (student_id) REFERENCES students(id)
+);
+
+create table if not exists status_students(
+status_student_id int not null primary key auto_increment,
+status_id int not null,
+student_id int not null,
+created_at DATE NOT NULL ,
+changed_at DATE  NOT NULL ,
+ FOREIGN KEY (status_id) REFERENCES status(status_id),
  FOREIGN KEY (student_id) REFERENCES students(id)
 );
 

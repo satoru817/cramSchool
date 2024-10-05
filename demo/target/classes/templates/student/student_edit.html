@@ -18,21 +18,7 @@
             <input type="text" th:field="*{name}" style="color:blue;">
             <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
         </div>
-        <div>
-            <label for="status">ステータス</label><br>
-            <label>
-                <input type="radio" th:field="*{status}" value="体験" >体験
-            </label>
-            <label>
-                <input type="radio" th:field="*{status}" value="本科">本科
-            </label>
-            <label>
-                <input type="radio"  th:field="*{status}" value="講習">講習
-            </label>
-            <label>
-                <input type="radio" th:field="*{status}" value="退塾">退塾済み
-            </label>
-        </div>
+        <!--ステータスの編集を追加する必要がある-->
         <div>
             <label for="grade">現在の学年を選択してください。</label><br>
             <label>
