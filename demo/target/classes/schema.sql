@@ -6,6 +6,20 @@ create table if not exists status(
     status_id int not null primary key auto_increment,
     name varchar(50) not null UNIQUE);
 
+create table if not exists classes(
+class_id int not null primary key auto_increment,
+subject varchar(50) not null,
+name varchar(50) not null);
+
+create table if not exists class_students(
+class_student_id int not null primary key auto_increment,
+student_id int not null,
+class_id int not null,
+created_at DATE NOT NULL,
+changed_at DATE NOT NULL,
+FOREIGN KEY(student_id) references students(id),
+foreign key (class_id) references classes(class_id));
+
 create table if not exists students(
     id int not null primary key auto_increment,
     el1 int not null,

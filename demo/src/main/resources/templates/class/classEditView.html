@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Classes List</title>
+
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+  <h1>登録済みクラス</h1>
+ <table border="1">
+    <thead>
+    <tr>
+      <th>Class ID</th>
+      <th>科目</th>
+      <th>クラス名</th>
+      <th>削除</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="klass : ${classList}">
+      <td th:text="${klass.classId}"></td>
+      <td th:text="${klass.subject}"></td>
+      <td th:text="${klass.name}"></td>
+      <td><a th:href="@{/classDelete/__${klass.classId}__}">削除</a></td>
+    </tr>
+    </tbody>
+  </table>
+  <hr>
+  <form th:action="@{/createClass}" method="post" th:object="${klass}">
+      <label for="subject">科目を選択してください</label><br>
+      <label>
+        <input type="radio" th:field="*{subject}" value="国語" >国語
+      </label>
+      <label>
+        <input type="radio" th:field="*{subject}" value="数学">数学
+      </label>
+      <label>
+        <input type="radio" th:field="*{subject}"value="英語">英語
+      </label>
+      <label>
+        <input type="radio" th:field="*{subject}" value="社会">理科
+      </label>
+      <label>
+        <input type="radio" th:field="*{subject}" value="理科">社会
+      </label>
+      <br>
+      <label for="name">クラス名を入力してください</label>
+      <input type="text" th:field="*{name}">
+
+    　<div>
+    　　<span th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></span>
+    　　<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+  　　</div>
+    　<button type="submit">クラスを登録</button>
+  </form>
+
+</body>
+</html>
