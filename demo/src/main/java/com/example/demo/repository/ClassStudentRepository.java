@@ -1,7 +1,56 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.KlassStudent;
+import com.example.demo.entity.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Date;
 
 public interface ClassStudentRepository extends JpaRepository<KlassStudent,Integer> {
+    @Query("SELECT ks FROM KlassStudent ks " +
+            "JOIN ks.klass k " +
+            "WHERE ks.student = :student " +
+            "AND k.subject = '国語' " +
+            "AND :date BETWEEN ks.createdAt AND ks.changedAt")
+    KlassStudent findKlassForJapaneseByStudentAndDate(@Param("student") Student student, @Param("date") Date date);
+
+
+    @Query("SELECT ks FROM KlassStudent ks " +
+            "JOIN ks.klass k " +
+            "WHERE ks.student = :student " +
+            "AND k.subject = '数学' " +
+            "AND :date BETWEEN ks.createdAt AND ks.changedAt")
+    KlassStudent findKlassForMathByStudentAndDate(@Param("student") Student student, @Param("date") Date date);
+
+    @Query("SELECT ks FROM KlassStudent ks " +
+            "JOIN ks.klass k " +
+            "WHERE ks.student = :student " +
+            "AND k.subject = '理科' " +
+            "AND :date BETWEEN ks.createdAt AND ks.changedAt")
+    KlassStudent findKlassForScienceByStudentAndDate(@Param("student") Student student, @Param("date") Date date);
+
+    @Query("SELECT ks FROM KlassStudent ks " +
+            "JOIN ks.klass k " +
+            "WHERE ks.student = :student " +
+            "AND k.subject = '英語' " +
+            "AND :date BETWEEN ks.createdAt AND ks.changedAt")
+    KlassStudent findKlassForEnglishByStudentAndDate(@Param("student") Student student, @Param("date") Date date);
+
+
+    @Query("SELECT ks FROM KlassStudent ks " +
+            "JOIN ks.klass k " +
+            "WHERE ks.student = :student " +
+            "AND k.subject = '社会' " +
+            "AND :date BETWEEN ks.createdAt AND ks.changedAt")
+    KlassStudent findKlassForSocialByStudentAndDate(@Param("student") Student student, @Param("date") Date date);
+
+    @Query("SELECT ks FROM KlassStudent ks " +
+            "Join ks.klass k "+
+            "WHERE ks.student = :student "+
+            "AND k.subject = :subject" +
+            "AND :date BETWEEN ks.createdAt AND ks.changedAt")
+    KlassStudent findKlassStudentForASubjectAndDate(@Param("student")Student student, @Param("date")Date date ,@Param("subject")String subject);
+
 }

@@ -11,6 +11,13 @@ class_id int not null primary key auto_increment,
 subject varchar(50) not null,
 name varchar(50) not null);
 
+create table if not exists students(
+    id int not null primary key auto_increment,
+    el1 int not null,
+    code int  unique,
+    name varchar(255) not null
+    );
+
 create table if not exists class_students(
 class_student_id int not null primary key auto_increment,
 student_id int not null,
@@ -20,12 +27,7 @@ changed_at DATE NOT NULL,
 FOREIGN KEY(student_id) references students(id),
 foreign key (class_id) references classes(class_id));
 
-create table if not exists students(
-    id int not null primary key auto_increment,
-    el1 int not null,
-    code int  unique,
-    name varchar(255) not null
-    );
+
 
 create table if not exists school_student(
 id int not null primary key auto_increment,
