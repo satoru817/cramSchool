@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <div th:replace="~{fragment::head}"></div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>クラス登録</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <div th:replace="~{fragment::head}"></div>
 </head>
 <body>
 <div th:replace="~{fragment::header}"></div>
-<div class="container">
-    <h1>クラス登録</h1>
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">クラス登録</h1>
     <form th:action="@{/submitClassRegistration}" method="post">
-        <table class="table">
-            <thead>
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
             <tr>
                 <th>学生名</th>
                 <th>国語</th>
@@ -68,10 +71,13 @@
             </th:block>
             </tbody>
         </table>
-        <button type="submit" class="btn btn-primary">登録する</button>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">登録する</button>
+        </div>
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

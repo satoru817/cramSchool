@@ -151,19 +151,19 @@ public class ClassController {
             System.out.println("socialClassName_" + socialClassName);
 
 // 各科目の過去のクラス名を取得
-            String prevJapaneseClassName = getPrevClassName(classStudentRepository.findKlassForJapaneseByStudentAndDate(student, today));
+            String prevJapaneseClassName = getPrevClassName(classStudentRepository.findKlassForJapaneseByStudentAndDate(student, today).getFirst());
             System.out.println("prevJapaneseClassName_" + prevJapaneseClassName);
 
-            String prevMathClassName = getPrevClassName(classStudentRepository.findKlassForMathByStudentAndDate(student, today));
+            String prevMathClassName = getPrevClassName(classStudentRepository.findKlassForMathByStudentAndDate(student, today).getFirst());
             System.out.println("prevMathClassName_" + prevMathClassName);
 
-            String prevEnglishClassName = getPrevClassName(classStudentRepository.findKlassForEnglishByStudentAndDate(student, today));
+            String prevEnglishClassName = getPrevClassName(classStudentRepository.findKlassForEnglishByStudentAndDate(student, today).getFirst());
             System.out.println("prevEnglishClassName_" + prevEnglishClassName);
 
-            String prevScienceClassName = getPrevClassName(classStudentRepository.findKlassForScienceByStudentAndDate(student, today));
+            String prevScienceClassName = getPrevClassName(classStudentRepository.findKlassForScienceByStudentAndDate(student, today).getFirst());
             System.out.println("prevScienceClassName_" + prevScienceClassName);
 
-            String prevSocialClassName = getPrevClassName(classStudentRepository.findKlassForSocialByStudentAndDate(student, today));
+            String prevSocialClassName = getPrevClassName(classStudentRepository.findKlassForSocialByStudentAndDate(student, today).getFirst());
             System.out.println("prevSocialClassName_" + prevSocialClassName);
 
             // クラスの変更があった場合の処理
@@ -203,7 +203,7 @@ public class ClassController {
                     log.error("Klass not found for subject: " + subject + ", class name: " + prevClassName);
                 }
             }
-        }else{
+        }else if(prevClassName == null){
             Klass klass = classRepository.findBySubjectAndName(subject, newClassName);
             KlassStudent newKlassStudent = new KlassStudent();
             newKlassStudent.setKlass(klass);

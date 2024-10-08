@@ -14,23 +14,23 @@ import java.util.Date;
 public class ClassStudentService {
     private final ClassStudentRepository classStudentRepository;
     public Klass findKlassForJapaneseByStudentAndDate(Student student, Date date){
-        return classStudentRepository.findKlassForJapaneseByStudentAndDate(student, date).getKlass();
+        return classStudentRepository.findKlassForJapaneseByStudentAndDate(student, date).getFirst().getKlass();
     }
 
     public Klass findKlassForMathByStudentAndDate(Student student, Date date){
-        return classStudentRepository.findKlassForMathByStudentAndDate(student, date).getKlass();
+        return classStudentRepository.findKlassForMathByStudentAndDate(student, date).getFirst().getKlass();
     }
 
     public Klass findKlassForEnglishByStudentAndDate(Student student, Date date){
-        return classStudentRepository.findKlassForEnglishByStudentAndDate(student, date).getKlass();
+        return classStudentRepository.findKlassForEnglishByStudentAndDate(student, date).getFirst().getKlass();
     }
 
     public Klass findKlassForScienceByStudentAndDate(Student student, Date date){
-        return classStudentRepository.findKlassForScienceByStudentAndDate(student, date).getKlass();
+        return classStudentRepository.findKlassForScienceByStudentAndDate(student, date).getFirst().getKlass();
     }
 
     public Klass findKlassForSocialByStudentAndDate(Student student, Date date){
-        return classStudentRepository.findKlassForSocialByStudentAndDate(student, date).getKlass();
+        return classStudentRepository.findKlassForSocialByStudentAndDate(student, date).getFirst().getKlass();
     }
 
     public boolean isBelongToAClassOfASubject(Student student, Date date , String subject){
