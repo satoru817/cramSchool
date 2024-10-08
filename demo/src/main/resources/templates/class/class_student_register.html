@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>クラス登録</title>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container">
+    <h1>クラス登録</h1>
+    <form th:action="@{/submitClassRegistration}" method="post">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>学生名</th>
+                <th>国語</th>
+                <th>数学</th>
+                <th>英語</th>
+                <th>理科</th>
+                <th>社会</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="form : ${classRegistrationForms}">
+                <tr>
+                    <td th:text="${form.studentName}"></td>
+                    <td>
+                        <select th:name="japaneseClassName__${form.studentId}__" class="form-control">
+                            <th:block th:each="option : ${classOptions}">
+                                <option th:value="${option}" th:text="${option}"
+                                        th:selected="${form.japaneseClassName == option}"></option>
+                            </th:block>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:name="mathClassName__${form.studentId}__" class="form-control">
+                            <th:block th:each="option : ${classOptions}">
+                                <option th:value="${option}" th:text="${option}"
+                                        th:selected="${form.mathClassName == option}"></option>
+                            </th:block>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:name="englishClassName__${form.studentId}__" class="form-control">
+                            <th:block th:each="option : ${classOptions}">
+                                <option th:value="${option}" th:text="${option}"
+                                        th:selected="${form.englishClassName == option}"></option>
+                            </th:block>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:name="scienceClassName__${form.studentId}__" class="form-control">
+                            <th:block th:each="option : ${classOptions}">
+                                <option th:value="${option}" th:text="${option}"
+                                        th:selected="${form.scienceClassName == option}"></option>
+                            </th:block>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:name="socialClassName__${form.studentId}__" class="form-control">
+                            <th:block th:each="option : ${classOptions}">
+                                <option th:value="${option}" th:text="${option}"
+                                        th:selected="${form.socialClassName == option}"></option>
+                            </th:block>
+                        </select>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">登録する</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

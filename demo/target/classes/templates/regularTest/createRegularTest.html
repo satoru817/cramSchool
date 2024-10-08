@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <div th:replace="~{fragment::head}"></div>
     <title th:unless="${isEdit}">テスト登録フォーム</title>
     <title th:if="${isEdit}">テスト編集フォーム</title>
 </head>

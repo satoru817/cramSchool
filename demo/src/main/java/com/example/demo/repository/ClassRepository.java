@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ClassRepository extends JpaRepository<Klass,Integer> {
     public List<Klass> findAll();
+
+    public Klass findBySubjectAndName(String subject,String name );
 }
