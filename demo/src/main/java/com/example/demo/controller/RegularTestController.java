@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.RegularTestForm1;
 import com.example.demo.dto.SchoolForm;
 import com.example.demo.entity.RegularTest;
-import com.example.demo.entity.RegularTestResult;
 import com.example.demo.entity.School;
 import com.example.demo.entity.Student;
-import com.example.demo.form.RegularTestForm;
+import com.example.demo.dto.RegularTestForm;
 import com.example.demo.form.TestResultForm;
 import com.example.demo.service.*;
 import com.example.demo.show.RegularTestShow;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,8 +165,8 @@ public class RegularTestController {
         return "test/testResultEdit";
     }
 
-    @GetMapping("/schoolSelection")
-    public String getSchoolSelection(Model model) {
+    @GetMapping("/createRegularTest")
+    public String createRegularTests(Model model) {
         List<School> schoolList = schoolService.fetchAll();
 
         List<SchoolForm> schoolFormList = new ArrayList<>();
@@ -178,17 +179,59 @@ public class RegularTestController {
         }
         model.addAttribute("schoolFormList", schoolFormList);
 
+        RegularTestForm1 regularTestForm1 = new RegularTestForm1();
+        model.addAttribute("regularTestForm1",regularTestForm1);
+
         List<Integer> selectedSchoolIds = new ArrayList<>();
 
         return "regularTest/createRegularTest1"; // Thymeleafテンプレート名
     }
     @PostMapping("/submitSchoolSelection")
-    public String submitSchoolSelection(@RequestParam List<Integer> selectedSchoolIds) {
-        // 選択された学校のIDを処理する
-        for (Integer id : selectedSchoolIds) {
-            System.out.println("選択された学校ID: " + id);
+    public String submitSchoolSelection(@RequestParam List<Integer> selectedSchoolIds,
+                                        @Validated RegularTestForm1 regularTestForm1,
+                                        BindingResult result,
+                                        RedirectAttributes redirectAttributes) {
+        //エラーがあったらもとのフォームに戻る
+        if(result.hasErrors()){
+            System.out.println("エラーがありました。");
+            redirectAttributes.addFlashAttribute("regularTestForm1",regularTestForm1);
+            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
+            +Conventions.getVariableName(regularTestForm1),result);
+            redirectAttributes.addFlashAttribute("selectedSchoolIds",selectedSchoolIds);
+            return "redirect:/createRegularTest";
+        }else{
+            Date sqlToday = termAndYearService.getSqlToday();
+            Integer thisTerm = termAndYearService.getTerm();
+            Integer grade = regularTestForm1.getGrade();
+            Integer semester  = regularTestForm1.getSemester();
+            Integer isMid = regularTestForm1.getIsMid();
+
+            //エラーがなければテストを作成する。
+            // しかし、すでにDBに同じ学年同じ年度、同じ学期、同じ中間か期末の物があったら新規で作ってはならない。
+            for (Integer id : selectedSchoolIds) {
+                //すでに存在するかどうかの判定
+                School school = schoolService.fetchById(id);
+                if(regularTestService.getBySchoolAndGradeAndSemesterAndIsMidAndTerm(school,grade,semester,isMid,thisTerm)==null){
+                    //存在しなければ新規で作成して保存する
+                    RegularTest regularTest = new RegularTest();
+                    regularTest.setSchool(school);
+                    regularTest.setGrade(grade);
+                    regularTest.setSemester(semester);
+                    regularTest.setIsMid(isMid);
+                    regularTest.setDate(sqlToday);
+                    regularTestService.save(regularTest);
+                }else{
+
+                }
+            }
+
+            return "redirect:/showAllRegularTest";
+
         }
-        return "redirect:/success"; // 送信後のリダイレクト先
+
+
+
+
     }
 
 

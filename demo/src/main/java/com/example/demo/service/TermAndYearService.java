@@ -5,6 +5,7 @@ import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 @Service
@@ -96,6 +97,23 @@ public class TermAndYearService {
             return currentYear;
         }
 
+    }
+
+    public static Integer getTerm(java.sql.Date sqlDate) {
+        // Calendarインスタンスを作成
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(sqlDate);
+
+        // 年と月を取得
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH); // 0から11までの値
+
+        // 4月より前なら前年の年度を返す
+        if (month < Calendar.APRIL) {
+            return year - 1;
+        } else {
+            return year; // それ以外は現在の年度を返す
+        }
     }
 
 

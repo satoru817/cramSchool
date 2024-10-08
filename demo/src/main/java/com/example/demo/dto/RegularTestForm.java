@@ -1,10 +1,9 @@
-package com.example.demo.form;
+package com.example.demo.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Data
