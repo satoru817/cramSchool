@@ -1,5 +1,7 @@
 insert ignore into schools(id,name) values
-(1,'不明');
+(1,'不明'),
+(2,'school1'),
+(3,'school2');
 
 
 INSERT IGNORE INTO classes (class_id, subject, name) VALUES

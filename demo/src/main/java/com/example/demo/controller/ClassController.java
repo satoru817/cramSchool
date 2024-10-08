@@ -24,10 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -133,6 +130,7 @@ public class ClassController {
         Date today = termAndYearService.getTodayAsDate();
 
         for (Student student : studentList) {
+            System.out.println("処理中のstudent: " + student.getName() );
             Integer studentId = student.getId();
 
             String japaneseClassName = params.get("japaneseClassName" + studentId);
@@ -150,21 +148,29 @@ public class ClassController {
             String socialClassName = params.get("socialClassName" + studentId);
             System.out.println("socialClassName_" + socialClassName);
 
-// 各科目の過去のクラス名を取得
-            String prevJapaneseClassName = getPrevClassName(classStudentRepository.findKlassForJapaneseByStudentAndDate(student, today).getFirst());
-            System.out.println("prevJapaneseClassName_" + prevJapaneseClassName);
 
-            String prevMathClassName = getPrevClassName(classStudentRepository.findKlassForMathByStudentAndDate(student, today).getFirst());
-            System.out.println("prevMathClassName_" + prevMathClassName);
+            // Fetch previous class names safely
+            List<KlassStudent> japaneseKlassList = classStudentRepository.findKlassForJapaneseByStudentAndDate(student, today);
+            String prevJapaneseClassName = getPrevClassName(japaneseKlassList.isEmpty() ? null : japaneseKlassList.getFirst());
+            System.out.println("prevJapaneseClassName: " + prevJapaneseClassName);
 
-            String prevEnglishClassName = getPrevClassName(classStudentRepository.findKlassForEnglishByStudentAndDate(student, today).getFirst());
-            System.out.println("prevEnglishClassName_" + prevEnglishClassName);
+            List<KlassStudent> mathKlassList = classStudentRepository.findKlassForMathByStudentAndDate(student, today);
+            String prevMathClassName = getPrevClassName(mathKlassList.isEmpty() ? null : mathKlassList.getFirst());
+            System.out.println("prevMathClassName: " + prevMathClassName);
 
-            String prevScienceClassName = getPrevClassName(classStudentRepository.findKlassForScienceByStudentAndDate(student, today).getFirst());
-            System.out.println("prevScienceClassName_" + prevScienceClassName);
+            List<KlassStudent> englishKlassList = classStudentRepository.findKlassForEnglishByStudentAndDate(student, today);
+            String prevEnglishClassName = getPrevClassName(englishKlassList.isEmpty() ? null : englishKlassList.getFirst());
+            System.out.println("prevEnglishClassName: " + prevEnglishClassName);
 
-            String prevSocialClassName = getPrevClassName(classStudentRepository.findKlassForSocialByStudentAndDate(student, today).getFirst());
-            System.out.println("prevSocialClassName_" + prevSocialClassName);
+            List<KlassStudent> scienceKlassList = classStudentRepository.findKlassForScienceByStudentAndDate(student, today);
+            String prevScienceClassName = getPrevClassName(scienceKlassList.isEmpty() ? null : scienceKlassList.getFirst());
+            System.out.println("prevScienceClassName: " + prevScienceClassName);
+
+            List<KlassStudent> socialKlassList = classStudentRepository.findKlassForSocialByStudentAndDate(student, today);
+            String prevSocialClassName = getPrevClassName(socialKlassList.isEmpty() ? null : socialKlassList.getFirst());
+            System.out.println("prevSocialClassName: " + prevSocialClassName);
+
+
 
             // クラスの変更があった場合の処理
             updateClassIfChanged(student, today, "国語", japaneseClassName, prevJapaneseClassName);
@@ -186,10 +192,12 @@ public class ClassController {
 
     private void updateClassIfChanged(Student student, Date today, String subject, String newClassName, String prevClassName) {
         if (prevClassName != null && !newClassName.equals(prevClassName)) {
-            KlassStudent prevKlassStudent = classStudentRepository.findKlassStudentForASubjectAndDate(student, today, subject).getFirst();
-            if (prevKlassStudent != null) {
+            Optional<KlassStudent> optionalPrevKlassStudent = Optional.ofNullable(classStudentRepository.findKlassStudentForASubjectAndDate(student, today, subject).getFirst());
+
+            if (optionalPrevKlassStudent.isPresent()) {
+                KlassStudent prevKlassStudent = optionalPrevKlassStudent.get();
                 prevKlassStudent.setChangedAt(termAndYearService.getSqlToday());
-                classStudentRepository.save(prevKlassStudent); // prevKlassStudentを編集して保存
+                classStudentRepository.save(prevKlassStudent); // Save the updated prevKlassStudent
 
                 Klass klass = classRepository.findBySubjectAndName(subject, newClassName);
                 if (klass != null) {

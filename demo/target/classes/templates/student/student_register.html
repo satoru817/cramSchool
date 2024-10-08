@@ -1,71 +1,93 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>生徒登録</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <div th:replace="~{fragment::head}"></div>
+    <title>Title</title>
 </head>
 <body>
-<div th:replace="~{fragment::header}"></div>
-<div class="container mt-5">
-  <h1 class="mb-4 text-center">生徒登録をしてください</h1>
+  <div th:replace="~{fragment::header}"></div>
+  <h1>生徒登録をしてください</h1>
   <form th:action="@{/studentRegister}" th:object="${studentForm}" method="post">
-    <div class="form-group">
-      <label for="code">生徒コード</label>
-      <input type="text" th:field="*{code}" class="form-control" style="color:blue;">
-      <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></div>
+    <div>
+      <label for="code">生徒コード</label><br>
+      <input type="text" th:field="*{code}" style="color:blue;">
+      <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" style="color:red;"></div>
     </div>
-    <div class="form-group">
-      <label for="name">生徒名</label>
-      <input type="text" th:field="*{name}" class="form-control" style="color:blue;">
-      <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+    <div>
+      <label for="name" >生徒名</label><br>
+      <input type="text" th:field="*{name}" style="color:blue;">
+      <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></div>
     </div>
-    <div class="form-group">
+    <!--ステータスをここで編集できるようにしたい-->
+    <div>
       <label for="statusId">ステータス</label>
-      <div th:each="status : ${statusList}" class="form-check">
-        <input type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" class="form-check-input" id="status_${status.getStatusId()}">
-        <label class="form-check-label" th:for="'status_' + ${status.getStatusId()}">
+      <div th:each="status:${statusList}">
+        <label>
+          <input type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" >
           <span th:text="${status.getName()}"></span>
         </label>
       </div>
     </div>
-    <div class="form-group">
-      <label>現在の学年を選択してください。</label><br>
-      <div th:each="grade : ${#numbers.sequence(1, 12)}" class="form-check">
-        <input type="radio" th:field="*{grade}" th:value="${grade}" class="form-check-input" id="grade_${grade}">
-        <label class="form-check-label" th:for="'grade_' + ${grade}">
-          <span th:text="'小学' + ${grade} + '年生'"></span>
-        </label>
-      </div>
-      <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" class="text-danger"></div>
+    <div>
+      <label for="grade">現在の学年を選択してください。</label><br>
+      <label>
+        <input type="radio" th:field="*{grade}" value="1" >小学1年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="2">小学2年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="3">小学3年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="4">小学4年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="5">小学5年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="6">小学6年生
+      </label>
+      <br>
+      <label>
+        <input type="radio" th:field="*{grade}" value="7">中学1年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="8">中学2年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="9">中学3年生
+      </label>
+      <br>
+      <label>
+        <input type="radio" th:field="*{grade}" value="10">高校1年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="11">高校2年生
+      </label>
+      <label>
+        <input type="radio" th:field="*{grade}" value="12">高校3年生
+      </label>
+      <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" style="color:red;"></div>
     </div>
 
     <hr>
-    <div class="form-group">
-      <label for="schoolId">所属学校名</label>
-      <div th:each="school : ${schoolList}" class="form-check">
-        <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" class="form-check-input" id="school_${school.getId()}">
-        <label class="form-check-label" th:for="'school_' + ${school.getId()}">
-          <span th:text="${school.getName()}"></span>
-        </label>
-      </div>
+    <label for="schoolId">所属学校名</label>
+    <div th:each="school:${schoolList}">
+      <label>
+        <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" >
+        <span th:text="${school.getName()}"></span>
+      </label>
     </div>
-    <button type="submit" class="btn btn-primary">登録</button>
-  </form>
+    <input type="submit" value="登録">
 
-  <hr>
-  <h3>CSVファイルのアップロードはこちらから（UTF-8に変換して保存してから行ってください。教師のデータは除いておいてください。）</h3>
-  <p>CSVのencodingをUTF-8にする方法は<a href="https://atmarkit.itmedia.co.jp/ait/articles/2112/20/news026.html#:~:text=Excel%202016%E4%BB%A5%E9%99%8D%E3%81%AE%E5%A0%B4%E5%90%88%E3%80%81CSV%E3%81%A7%E4%BF%9D%E5%AD%98%E3%81%97%E3%81%9F%E3%81%84%E3%82%B7%E3%83%BC%E3%83%88,%E3%82%88%E3%81%84%EF%BC%88Excel%202016%E4%BB%A5%E9%99%8D%E3%81%A7%E3%81%AF%E3%80%81%E6%9B%B4%E6%96%B0">こちら</a></p>
-  <form method="post" enctype="multipart/form-data" th:action="@{/studentUploadCSV}">
-    <div class="form-group">
-      <input type="file" name="file" accept=".csv" required class="form-control-file">
-    </div>
-    <button type="submit" class="btn btn-secondary">アップロード</button>
   </form>
-</div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <hr>
+  <h3>CSVファイルのアップロードはこちらから（UTF-8に変換して保存してから行ってください。教師のデータは除いておいてください。)</h3>
+  <p>CSVのencodingをUTF-8にする方法は<a href="https://atmarkit.itmedia.co.jp/ait/articles/2112/20/news026.html#:~:text=Excel%202016%E4%BB%A5%E9%99%8D%E3%81%AE%E5%A0%B4%E5%90%88%E3%80%81CSV%E3%81%A7%E4%BF%9D%E5%AD%98%E3%81%97%E3%81%9F%E3%81%84%E3%82%B7%E3%83%BC%E3%83%88,%E3%82%88%E3%81%84%EF%BC%88Excel%202016%E3%81%A7%E3%81%AF%E3%80%81%E6%9B%B4%E6%96%B0">こちら</a></p>
+  <form method="post" enctype="multipart/form-data" th:action="@{/studentUploadCSV}">
+    <input type="file" name="file" accept=".csv" required>
+    <input type="submit" value="Upload">
+  </form>
 </body>
 </html>

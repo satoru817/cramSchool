@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.SchoolForm;
 import com.example.demo.entity.RegularTest;
 import com.example.demo.entity.RegularTestResult;
 import com.example.demo.entity.School;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
@@ -160,6 +162,33 @@ public class RegularTestController {
         model.addAttribute("regularTestShow",regularTestConverter.regularTestToRegularTestShow(regularTestService.fetchById(regularTestId)));
 
         return "test/testResultEdit";
+    }
+
+    @GetMapping("/schoolSelection")
+    public String getSchoolSelection(Model model) {
+        List<School> schoolList = schoolService.fetchAll();
+
+        List<SchoolForm> schoolFormList = new ArrayList<>();
+        for(School school: schoolList){
+            System.out.println(school.getName());
+            SchoolForm schoolForm = new SchoolForm();
+            schoolForm.setId(school.getId());
+            schoolForm.setName(school.getName());
+            schoolFormList.add(schoolForm);
+        }
+        model.addAttribute("schoolFormList", schoolFormList);
+
+        List<Integer> selectedSchoolIds = new ArrayList<>();
+
+        return "regularTest/createRegularTest1"; // Thymeleafテンプレート名
+    }
+    @PostMapping("/submitSchoolSelection")
+    public String submitSchoolSelection(@RequestParam List<Integer> selectedSchoolIds) {
+        // 選択された学校のIDを処理する
+        for (Integer id : selectedSchoolIds) {
+            System.out.println("選択された学校ID: " + id);
+        }
+        return "redirect:/success"; // 送信後のリダイレクト先
     }
 
 
