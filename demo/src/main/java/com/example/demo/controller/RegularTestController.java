@@ -87,19 +87,24 @@ public class RegularTestController {
         model.addAttribute("regularTestShowList",regularTestShowList);
         return "regularTest/showAllRegularTest";
     }
-
+    //TODO:regularTestSetを取ってきて、年度、学年、学期、isMidの情報をviewに渡す。
     @GetMapping("/regularTestEdit/{id}")
     public String regularTestEdit(@PathVariable("id")Integer id,Model model){
+
+
         Integer isEdit = 1;
         model.addAttribute("isEdit",isEdit);
         model.addAttribute("regularTestId",id);//これで見分ける。
 
         RegularTest regularTest = regularTestService.fetchById(id);
+        model.addAttribute("regularTest",regularTest);
+
+        RegularTestSet regularTestSet = regularTest.getRegularTestSet();
+        model.addAttribute("regularTestSet",regularTestSet);
+
         RegularTestForm regularTestForm = regularTestConverter.fromRegularTestToRegularTestForm(regularTest);
 
-        List<School> schoolList = schoolService.fetchAll();
-        model.addAttribute("schoolList",schoolList);
-        model.addAttribute("regularTestForm",regularTestForm);
+
 
         return "regularTest/createRegularTest";
 

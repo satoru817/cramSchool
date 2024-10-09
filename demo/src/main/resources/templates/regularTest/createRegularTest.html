@@ -8,19 +8,11 @@
 <body>
 <div th:replace="~{fragment::header}"></div>
 <h2 th:unless="${isEdit}">テスト登録フォーム</h2>
-<h2 th:if="${isEdit}">テスト編集フォーム</h2>
+<h2 th:if="${isEdit}" th:text="${regularTestSet.term}+'年度'+${regularTest.getSchool().getName()} + ${regularTestSet.grade} +'学年' +${regularTest.semester} +'学期'+ "></h2>
 <form th:action="${isEdit == null ? '/submitRegularTest' : (isEdit == 1 ? '/updateRegularTest/' + regularTestId : '')}"
       th:object="${regularTestForm}"
       method="post">
 
-    <label for="schoolId">実施学校名</label>
-    <div th:each="school : ${schoolList}">
-        <label>
-            <input type="radio" th:field="*{schoolId}" th:value="${school.getId()}" required>
-            <span th:text="${school.name}"></span>
-        </label>
-    </div>
-    <div th:if="${#fields.hasErrors('schoolId')}" th:errors="*{schoolId}" style="color:red;"></div>
 
     <br>
     <label for="date">実施日</label>
@@ -44,27 +36,6 @@
 
     <br>
 
-    <label for="semester">学期</label>
-    <label>
-        <input type="radio" th:field="*{semester}" value="1">1学期
-    </label>
-    <label>
-        <input type="radio" th:field="*{semester}" value="2">2学期
-    </label>
-    <label>
-        <input type="radio" th:field="*{semester}" value="3">3学期
-    </label>
-
-    <br>
-
-    <label for="isMid">中間か期末</label>
-    <label>
-        <input type="radio" th:field="*{isMid}" value="0" required>中間
-    </label>
-    <label>
-        <input type="radio" th:field="*{isMid}" value="1">期末
-    </label>
-    <div th:if="${#fields.hasErrors('isMid')}" th:errors="*{isMid}" style="color:red;"></div>
 
     <br>
     <h3>科目別満点</h3>
