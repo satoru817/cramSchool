@@ -9,6 +9,7 @@
 <h1>定期テスト</h1>
 <ul>
   <li th:each="test : ${regularTestShowList}">
+    <span th:text="${test.term}+'年度'"></span>
     <span th:text="${test.schoolName}"></span>
     <span th:text="${test.grade}+'年生'"></span>
     <span th:text="${test.semester}+'学期'"></span>

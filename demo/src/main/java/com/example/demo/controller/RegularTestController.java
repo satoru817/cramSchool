@@ -1,15 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.RegularTestForm1;
 import com.example.demo.dto.SchoolForm;
 import com.example.demo.entity.*;
 import com.example.demo.dto.RegularTestForm;
-import com.example.demo.form.TestResultForm;
 import com.example.demo.repository.RegularTestResultRepository;
 import com.example.demo.repository.RegularTestSetRepository;
 import com.example.demo.repository.SchoolStudentRepository;
 import com.example.demo.service.*;
-import com.example.demo.show.RegularTestShow;
+import com.example.demo.dto.RegularTestShow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;

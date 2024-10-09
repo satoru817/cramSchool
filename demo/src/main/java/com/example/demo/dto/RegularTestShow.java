@@ -1,4 +1,4 @@
-package com.example.demo.show;
+package com.example.demo.dto;
 
 import lombok.Data;
 
@@ -7,6 +7,8 @@ public class RegularTestShow {
     private Integer regularTestId;
 
     private String schoolName;
+
+    private Integer term;
 
     private Integer grade;
 

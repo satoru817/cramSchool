@@ -1,21 +1,23 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.RegularTest;
+import com.example.demo.entity.RegularTestSet;
 import com.example.demo.entity.School;
 import com.example.demo.dto.RegularTestForm;
-import com.example.demo.show.RegularTestShow;
+import com.example.demo.dto.RegularTestShow;
+import com.example.demo.repository.RegularTestSetRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RegularTestConverter {
     private final SchoolService schoolService;
-
-    public RegularTestConverter(SchoolService schoolService) {
-        this.schoolService = schoolService;
-    }
+    private final RegularTestSetRepository regularTestSetRepository;
 
     public RegularTest RegularTestFormToRegularTest(RegularTestForm regularTestForm) {
         // Fetch the school entity based on the schoolId
@@ -66,6 +68,16 @@ public class RegularTestConverter {
     public RegularTestShow regularTestToRegularTestShow(RegularTest regularTest){
         RegularTestShow regularTestShow = new RegularTestShow();
         regularTestShow.setRegularTestId(regularTest.getRegularTestId());
+        regularTestShow.setSchoolName(regularTest.getSchool().getName());
+        //TODO:regularTestShowに足りない属性をセットする必要がある。Idで取ってくればいい
+        Optional<RegularTestSet> optionalRegularTestSet = regularTestSetRepository.findById(regularTest.getRegularTestSet().getId());
+        optionalRegularTestSet.ifPresent(regularTestSet -> {
+            regularTestShow.setSemester(regularTestSet.getSemester());
+            regularTestShow.setTerm(regularTestSet.getTerm());
+            regularTestShow.setIsMid(regularTestSet.getIsMid());
+            regularTestShow.setGrade(regularTestSet.getGrade());
+        });
+
 
         return regularTestShow;
     }
