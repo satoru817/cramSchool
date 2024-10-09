@@ -2,13 +2,15 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.RegularTestForm1;
 import com.example.demo.dto.SchoolForm;
-import com.example.demo.entity.RegularTest;
-import com.example.demo.entity.School;
-import com.example.demo.entity.Student;
+import com.example.demo.entity.*;
 import com.example.demo.dto.RegularTestForm;
 import com.example.demo.form.TestResultForm;
+import com.example.demo.repository.RegularTestResultRepository;
+import com.example.demo.repository.RegularTestSetRepository;
+import com.example.demo.repository.SchoolStudentRepository;
 import com.example.demo.service.*;
 import com.example.demo.show.RegularTestShow;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,28 +26,18 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 public class RegularTestController {
-    private RegularTestResultService regularTestResultService;
-    private RegularTestService regularTestService;
-    private SchoolService schoolService;
-    private TermAndYearService termAndYearService;
-    private RegularTestConverter regularTestConverter;
-    private StudentService studentService;
-
-    public RegularTestController(RegularTestResultService regularTestResultService,
-                                 RegularTestService regularTestService,
-                                 SchoolService schoolService,
-                                 TermAndYearService termAndYearService,
-                                 RegularTestConverter regularTestConverter,
-                                 StudentService studentService){
-        this.regularTestResultService = regularTestResultService;
-        this.regularTestService = regularTestService;
-        this.schoolService = schoolService;
-        this.termAndYearService = termAndYearService;
-        this.regularTestConverter = regularTestConverter;
-        this.studentService = studentService;
-    }
+    private final RegularTestResultService regularTestResultService;
+    private final RegularTestResultRepository regularTestResultRepository;
+    private final RegularTestService regularTestService;
+    private final SchoolService schoolService;
+    private final TermAndYearService termAndYearService;
+    private final RegularTestConverter regularTestConverter;
+    private final StudentService studentService;
+    private final RegularTestSetRepository regularTestSetRepository;
+    private final SchoolStudentRepository schoolStudentRepository;
 
     //テスト作成画面
     @GetMapping("/regularTestCreate")
@@ -193,7 +185,7 @@ public class RegularTestController {
                                         @RequestParam("isMid")Integer isMid,
                                         RedirectAttributes redirectAttributes) {
         //エラーがあったらもとのフォームに戻る
-        if(grade==null||semester==null||isMid==null||selectedSchoolIds==null){
+        if(grade==null||semester==null||isMid==null||selectedSchoolIds.isEmpty()){
             System.out.println("エラーがありました。");
             redirectAttributes.addFlashAttribute("hasError",true);
             redirectAttributes.addFlashAttribute("selectedSchoolIds",selectedSchoolIds);
@@ -201,7 +193,15 @@ public class RegularTestController {
         }else{
             Date sqlToday = termAndYearService.getSqlToday();
             Integer thisTerm = termAndYearService.getTerm();
-
+            //RegularTestSetに登録がなければ作成する
+            if(regularTestSetRepository.findByGradeAndTermAndIsMidAndSemester(grade,thisTerm,isMid,semester)==null){
+                RegularTestSet regularTestSet = new RegularTestSet();
+                regularTestSet.setTerm(thisTerm);
+                regularTestSet.setSemester(semester);
+                regularTestSet.setIsMid(isMid);
+                regularTestSet.setGrade(grade);
+                regularTestSetRepository.save(regularTestSet);
+            }
             //エラーがなければテストを作成する。
             // しかし、すでにDBに同じ学年同じ年度、同じ学期、同じ中間か期末の物があったら新規で作ってはならない。
             for (Integer id : selectedSchoolIds) {
@@ -209,13 +209,30 @@ public class RegularTestController {
                 School school = schoolService.fetchById(id);
                 if(regularTestService.getBySchoolAndGradeAndSemesterAndIsMidAndTerm(school,grade,semester,isMid,thisTerm)==null){
                     //存在しなければ新規で作成して保存する
+                    //TODO:schoolと学年が一致する生徒に関してはregular_exam_resultを作る。el1を使う
                     RegularTest regularTest = new RegularTest();
                     regularTest.setSchool(school);
                     regularTest.setGrade(grade);
                     regularTest.setSemester(semester);
                     regularTest.setIsMid(isMid);
                     regularTest.setDate(sqlToday);
+
+                    List<SchoolStudent> schoolStudentList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school,termAndYearService.getWhenEnteredElementarySchool(grade),termAndYearService.getSqlToday());
+                    if(!schoolStudentList.isEmpty()){
+                        for(SchoolStudent ss:schoolStudentList){
+                            //TODO:ssに対応した全点数nullのRegularTestResultを作成する
+                            RegularTestResult regularTestResult = new RegularTestResult();
+                            regularTestResult.setRegularTest(regularTest);
+                            regularTestResult.setStudent(ss.getStudent());
+                            regularTestResultRepository.save(regularTestResult);
+
+                        }
+                    }
                     regularTestService.save(regularTest);
+
+
+
+
                 }else{
 
                 }

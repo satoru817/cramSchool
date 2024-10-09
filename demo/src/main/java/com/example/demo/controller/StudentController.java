@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.entity.*;
+import com.example.demo.repository.StatusRepository;
 import com.example.demo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
@@ -34,6 +35,7 @@ public class StudentController {
     private final TermAndYearService termAndYearService;
     private final StatusService statusService;
     private final StatusStudentService statusStudentService;
+    private final StatusRepository statusRepository;
 
 
     ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小１","小２","小３","小４","小５","小６","中１","中２","中３","高１","高２","高３"));
@@ -110,10 +112,10 @@ public class StudentController {
         }
     }
 
-    //書き換え不要
+    //TODO:エラーが発生しました。メソッド名：getLast, 例外クラス名：java.util.NoSuchElementException
     @GetMapping("/studentShow")
     public String studentShow_g(Model model) {
-        List<Student> studentList = studentService.fetchAll();
+        List<Student> studentList = studentService.fetchAll();//こっちは大丈夫そう
         List<StudentShow> studentShows = convertToStudentShowList(studentList);//これを書き換えなければstudentshowを書き換えないと
 
         model.addAttribute("studentShows", studentShows);
@@ -200,29 +202,36 @@ public class StudentController {
                         schoolStudent.setSchool(schoolUnknown);
                     }
 
-                    String status;
+                    String sStatus;
 
                     switch(course){
                         case "講習生":
-                            status = "講習";
+                            sStatus = "講習";
                             break;
                         case "個別指導本科生":
-                            status="個別";
+                            sStatus="個別";
+                            break;
+                        case "体験":
+                            sStatus="体験";
                             break;
                         default:
-                            status = "本科";
+                            sStatus = "本科";
                     }
-
-
-
                     studentService.save(student);
+
+                    //TODO sStatusから対応するstatusを取ってくる。
+                    Status status = statusRepository.findByName(sStatus);
+                    //TODO StatusStudentをつくって保存
+                    StatusStudent statusStudent = new StatusStudent();
+                    statusStudent.setStudent(student);
+                    statusStudent.setStatus(status);
+                    statusStudent.setCreatedAt(termAndYearService.minSqlDate);
+                    statusStudent.setChangedAt(termAndYearService.maxSqlDate);
+                    statusStudentService.save(statusStudent);
 
                     schoolStudent.setStudent(student);
                     schoolStudent.setCreatedAt(termAndYearService.minSqlDate);
-
-
                     schoolStudent.setChangedAt(termAndYearService.maxSqlDate);
-
                     schoolStudentService.save(schoolStudent);
 
 
@@ -289,11 +298,11 @@ public class StudentController {
     }
 
 
-
+    //TODO:ここでエラーが出てる
     public StudentShow convertStudentToStudentShow(Student student){
 
         String schoolGrade = gradeList.get(termAndYearService.getSchoolGrade(student));
-        String status = getStatusNowYouBelongTo(student).getName();
+        String status = getStatusNowYouBelongTo(student).getName();//TODO:ここでエラーがでてる。一括CSV登録時にstatus_studentに登録してないでしょ。
 
         return new StudentShow(student.getId(),student.getName(),student.getCode(),schoolGrade,status,getSchoolNowYouBelongTo(student).getName());
 

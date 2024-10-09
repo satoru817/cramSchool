@@ -2,6 +2,13 @@ create table if not exists schools(
     id int not null primary key auto_increment,
     name varchar(255) not null unique);
 
+create table if not exists regular_exam_set(
+id int not null primary key auto_increment,
+term INT NOT NULL,
+grade INT NOT NULL,
+semester INT NOT NULL,
+isMid TINYINT(1) NOT NULL);
+
 create table if not exists status(
     status_id int not null primary key auto_increment,
     name varchar(50) not null UNIQUE);
@@ -51,6 +58,7 @@ changed_at DATE  NOT NULL ,
 
 create table if not exists regular_exam(
 id int not null primary key auto_increment,
+regular_test_set_id int not null,
 school_id int not null,
 date Date ,
 grade int not null,
@@ -65,7 +73,8 @@ music int,
 art int,
 tech int,
 pe int,
-foreign key (school_id) references schools(id));
+foreign key (school_id) references schools(id),
+foreign key(regular_test_set_id) references regular_exam_set(id));
 
 create table if not exists regular_exam_result(
 id int not null primary key auto_increment,
@@ -82,3 +91,4 @@ tech int,
 pe int,
 foreign key (regular_exam_id) references regular_exam(id),
 foreign key(student_id) references students(id));
+

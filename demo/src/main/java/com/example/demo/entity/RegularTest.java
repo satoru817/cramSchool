@@ -18,6 +18,10 @@ public class RegularTest {
     @JoinColumn(name="school_id")
     private School school;
 
+    @OneToMany
+    @JoinColumn(name="regular_test_set_id")//いくつかのテストを行った学年、年度、セメスター、中間か期末かでまとめるためのid
+    private RegularTestSet regularTestSet;
+
     @Column(name="date")//実施日を保存する理由は転校を把握するため。正確な値でなくても構わない。
     private Date date;
 

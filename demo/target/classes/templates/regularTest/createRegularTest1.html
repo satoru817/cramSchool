@@ -27,15 +27,14 @@
       <label for="grade">学年</label>
       <div>
         <label>
-          <input type="radio" th:field="*{grade}" value="1" required>中学1年生
+          <input type="radio" name="grade" value="1" required>中学1年生
         </label>
         <label>
-          <input type="radio" th:field="*{grade}" value="2">中学2年生
+          <input type="radio" name="grade" value="2" required>中学2年生
         </label>
         <label>
-          <input type="radio" th:field="*{grade}" value="3">中学3年生
+          <input type="radio" name="grade" value="3" required>中学3年生
         </label>
-        <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" style="color:red;"></div>
       </div>
     </div>
 
@@ -44,13 +43,13 @@
       <label for="semester">学期</label>
       <div>
         <label>
-          <input type="radio" th:field="*{semester}" value="1">1学期
+          <input type="radio" name="semester" value="1" required>1学期
         </label>
         <label>
-          <input type="radio" th:field="*{semester}" value="2">2学期
+          <input type="radio" name="semester" value="2" required>2学期
         </label>
         <label>
-          <input type="radio" th:field="*{semester}" value="3">3学期
+          <input type="radio" name="semester" value="3" required>3学期
         </label>
       </div>
     </div>
@@ -60,12 +59,11 @@
       <label for="isMid">中間か期末</label>
       <div>
         <label>
-          <input type="radio" th:field="*{isMid}" value="0" required>中間
+          <input type="radio" name="isMid" value="0" required>中間
         </label>
         <label>
-          <input type="radio" th:field="*{isMid}" value="1">期末
+          <input type="radio" name="isMid" value="1">期末
         </label>
-        <div th:if="${#fields.hasErrors('isMid')}" th:errors="*{isMid}" style="color:red;"></div>
       </div>
     </div>
 
@@ -83,7 +81,7 @@
         </div>
       </div>
     </div>
-
+    <div th:if="${hasError}" style="color:red;">入力内容にエラーがあります。</div>
     <button type="submit" class="btn btn-primary">送信</button>
   </form>
 </div>
