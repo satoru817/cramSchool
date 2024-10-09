@@ -25,9 +25,6 @@ public class RegularTestConverter {
         RegularTest regularTest = new RegularTest();
         regularTest.setSchool(school);
         regularTest.setDate(new java.sql.Date(regularTestForm.getDate().getTime()));
-        regularTest.setGrade(regularTestForm.getGrade());
-        regularTest.setSemester(regularTestForm.getSemester());
-        regularTest.setIsMid(regularTestForm.getIsMid());
         regularTest.setJapanese(regularTestForm.getJapanese());
         regularTest.setMath(regularTestForm.getMath());
         regularTest.setEnglish(regularTestForm.getEnglish());
@@ -45,9 +42,7 @@ public class RegularTestConverter {
         RegularTestForm form = new RegularTestForm();
         form.setSchoolId(regularTest.getSchool() != null ? regularTest.getSchool().getId() : null); // Assuming School has a method getSchoolId()
         form.setDate(regularTest.getDate() != null ? new java.util.Date(regularTest.getDate().getTime()) : null);
-        form.setGrade(regularTest.getGrade());
-        form.setSemester(regularTest.getSemester());
-        form.setIsMid(regularTest.getIsMid());
+
         form.setJapanese(regularTest.getJapanese());
         form.setMath(regularTest.getMath());
         form.setEnglish(regularTest.getEnglish());
@@ -71,10 +66,7 @@ public class RegularTestConverter {
     public RegularTestShow regularTestToRegularTestShow(RegularTest regularTest){
         RegularTestShow regularTestShow = new RegularTestShow();
         regularTestShow.setRegularTestId(regularTest.getRegularTestId());
-        regularTestShow.setGrade(regularTest.getGrade());
-        regularTestShow.setSchoolName(regularTest.getSchool().getName());
-        regularTestShow.setSemester(regularTest.getSemester());
-        regularTestShow.setIsMid(regularTest.getIsMid());
+
         return regularTestShow;
     }
 

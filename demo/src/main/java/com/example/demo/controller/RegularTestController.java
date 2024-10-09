@@ -13,6 +13,7 @@ import com.example.demo.show.RegularTestShow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -39,6 +40,7 @@ public class RegularTestController {
     private final RegularTestSetRepository regularTestSetRepository;
     private final SchoolStudentRepository schoolStudentRepository;
 
+    //TODO:全体として、RegularTestSetIdに対応しないといけない。
     //テスト作成画面
     @GetMapping("/regularTestCreate")
     public String createRegularTest(Model model){
@@ -134,28 +136,29 @@ public class RegularTestController {
 
 
     }
+//TODO後で復活させる
 
-    @GetMapping("/regularTestResultEdit/{id}")
-    public String regularTestResultEdit(@PathVariable("id")Integer regularTestId,
-                                        Model model){
-        RegularTest regularTest = regularTestService.fetchById(regularTestId);
-        //regularTestが実施された日にregularTestが実施された学校に属し、regularTestが実施された学年である生徒を探し出す必要がある。こうする
-        //つまり最新を探すのではなく日付で挟むのは、過去のデータを閲覧する際に使えなくてはならないからである。
-        //List<Student> studentList = studentService.findAllBySchoolAndEl1(regularTest.getSchool(),termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()));
-        //List<RegularTestResultForm>のオブジェクトを作成してviewに渡す必要がある。
-        List<Student> studentList = studentService.getStudentsByEl1AndDateRangeAndSchoolId(termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()), regularTest.getDate().toLocalDate(),regularTest.getSchool().getId());
-        List<TestResultForm> testResultFormList = new ArrayList<>();
-        for(Student student:studentList){
-            TestResultForm testResultForm = new TestResultForm(student);
-            testResultFormList.add(testResultForm);
-        }
-
-        model.addAttribute("regularTestId",regularTestId);
-        model.addAttribute("testResultFormList",testResultFormList);
-        model.addAttribute("regularTestShow",regularTestConverter.regularTestToRegularTestShow(regularTestService.fetchById(regularTestId)));
-
-        return "test/testResultEdit";
-    }
+//    @GetMapping("/regularTestResultEdit/{id}")
+//    public String regularTestResultEdit(@PathVariable("id")Integer regularTestId,
+//                                        Model model){
+//        RegularTest regularTest = regularTestService.fetchById(regularTestId);
+//        //regularTestが実施された日にregularTestが実施された学校に属し、regularTestが実施された学年である生徒を探し出す必要がある。こうする
+//        //つまり最新を探すのではなく日付で挟むのは、過去のデータを閲覧する際に使えなくてはならないからである。
+//        //List<Student> studentList = studentService.findAllBySchoolAndEl1(regularTest.getSchool(),termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()));
+//        //List<RegularTestResultForm>のオブジェクトを作成してviewに渡す必要がある。
+//        List<Student> studentList = studentService.getStudentsByEl1AndDateRangeAndSchoolId(termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()), regularTest.getDate().toLocalDate(),regularTest.getSchool().getId());
+//        List<TestResultForm> testResultFormList = new ArrayList<>();
+//        for(Student student:studentList){
+//            TestResultForm testResultForm = new TestResultForm(student);
+//            testResultFormList.add(testResultForm);
+//        }
+//
+//        model.addAttribute("regularTestId",regularTestId);
+//        model.addAttribute("testResultFormList",testResultFormList);
+//        model.addAttribute("regularTestShow",regularTestConverter.regularTestToRegularTestShow(regularTestService.fetchById(regularTestId)));
+//
+//        return "test/testResultEdit";
+//    }
 
     @GetMapping("/createRegularTest")
     public String createRegularTests(Model model) {
@@ -171,15 +174,14 @@ public class RegularTestController {
         }
         model.addAttribute("schoolFormList", schoolFormList);
 
-        RegularTestForm1 regularTestForm1 = new RegularTestForm1();
-        model.addAttribute("regularTestForm1",regularTestForm1);
 
         List<Integer> selectedSchoolIds = new ArrayList<>();
 
         return "regularTest/createRegularTest1"; // Thymeleafテンプレート名
     }
+    @Transactional
     @PostMapping("/submitSchoolSelection")
-    public String submitSchoolSelection(@RequestParam List<Integer> selectedSchoolIds,
+    public String doCreateRegularTestSetAndRegularTests(@RequestParam List<Integer> selectedSchoolIds,
                                         @RequestParam("grade")Integer grade,
                                         @RequestParam("semester")Integer semester,
                                         @RequestParam("isMid")Integer isMid,
@@ -191,15 +193,21 @@ public class RegularTestController {
             redirectAttributes.addFlashAttribute("selectedSchoolIds",selectedSchoolIds);
             return "redirect:/createRegularTest";
         }else{
+            System.out.println("isMidは存在します："+isMid);
             Date sqlToday = termAndYearService.getSqlToday();
             Integer thisTerm = termAndYearService.getTerm();
             //RegularTestSetに登録がなければ作成する
+            RegularTestSet regularTestSet = new RegularTestSet();
+
             if(regularTestSetRepository.findByGradeAndTermAndIsMidAndSemester(grade,thisTerm,isMid,semester)==null){
-                RegularTestSet regularTestSet = new RegularTestSet();
+                System.out.println("if文の中に入っています。");
                 regularTestSet.setTerm(thisTerm);
                 regularTestSet.setSemester(semester);
+                System.out.println("isMidは："+isMid);
                 regularTestSet.setIsMid(isMid);
                 regularTestSet.setGrade(grade);
+                System.out.println("RegularTestSetの状態: " + regularTestSet);
+
                 regularTestSetRepository.save(regularTestSet);
             }
             //エラーがなければテストを作成する。
@@ -211,11 +219,10 @@ public class RegularTestController {
                     //存在しなければ新規で作成して保存する
                     //TODO:schoolと学年が一致する生徒に関してはregular_exam_resultを作る。el1を使う
                     RegularTest regularTest = new RegularTest();
+                    regularTest.setRegularTestSet(regularTestSet);//新たに追加した
                     regularTest.setSchool(school);
-                    regularTest.setGrade(grade);
-                    regularTest.setSemester(semester);
-                    regularTest.setIsMid(isMid);
                     regularTest.setDate(sqlToday);
+                    regularTestService.save(regularTest);//新たなregularTestを保存
 
                     List<SchoolStudent> schoolStudentList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school,termAndYearService.getWhenEnteredElementarySchool(grade),termAndYearService.getSqlToday());
                     if(!schoolStudentList.isEmpty()){
@@ -228,7 +235,7 @@ public class RegularTestController {
 
                         }
                     }
-                    regularTestService.save(regularTest);
+
 
 
 

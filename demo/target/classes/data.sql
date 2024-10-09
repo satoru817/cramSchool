@@ -40,3 +40,10 @@ INSERT IGNORE INTO classes (class_id, subject, name) VALUES
 (33, '社会', 'β2'),
 (34, '社会', 'サッカー1'),
 (35, '社会', 'サッカー2');
+
+
+insert ignore into status(status_id,name) values
+(1,'講習'),
+(2,'個別'),
+(3,'体験'),
+(4,'本科');

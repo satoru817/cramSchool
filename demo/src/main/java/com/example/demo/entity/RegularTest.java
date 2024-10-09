@@ -18,21 +18,12 @@ public class RegularTest {
     @JoinColumn(name="school_id")
     private School school;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name="regular_test_set_id")//いくつかのテストを行った学年、年度、セメスター、中間か期末かでまとめるためのid
     private RegularTestSet regularTestSet;
 
     @Column(name="date")//実施日を保存する理由は転校を把握するため。正確な値でなくても構わない。
     private Date date;
-
-    @Column(name="grade")//学年
-    private Integer grade;
-
-    @Column(name="semester")//学期
-    private Integer semester;
-
-    @Column(name="is_mid")//中間か期末か判定期末は0,中間は１
-    private Integer isMid;
 
     @Column(name="japanese")
     private Integer japanese;

@@ -21,6 +21,6 @@ public class RegularTestSet {
     @Column(name="semester")
     private Integer semester;
 
-    @Column(name="isMid")
+    @Column(name="is_mid")
     private Integer isMid;
 }

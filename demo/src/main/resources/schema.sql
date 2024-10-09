@@ -7,7 +7,7 @@ id int not null primary key auto_increment,
 term INT NOT NULL,
 grade INT NOT NULL,
 semester INT NOT NULL,
-isMid TINYINT(1) NOT NULL);
+is_mid INT NOT NULL);
 
 create table if not exists status(
     status_id int not null primary key auto_increment,
@@ -60,10 +60,7 @@ create table if not exists regular_exam(
 id int not null primary key auto_increment,
 regular_test_set_id int not null,
 school_id int not null,
-date Date ,
-grade int not null,
-semester int not null,
-is_mid tinyint(1) not null,
+date Date ,--this column is used for monitoring school change
 japanese int ,
 math int,
 english int,
