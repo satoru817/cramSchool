@@ -16,7 +16,7 @@ public class RegularTestService {
 
     public RegularTest getBySchoolAndGradeAndSemesterAndIsMidAndTerm(School school, Integer grade, Integer semester, Integer isMid, Integer thisTerm) {
         List<RegularTest> regularTestList = regularTestRepository.getBySchoolAndGradeAndSemesterAndIsMidOrderByDateDesc(school,grade,semester,isMid);
-        if(regularTestList==null){
+        if(regularTestList.isEmpty()){//nullpointerexcption回避
             return null;
         }else {
             if (TermAndYearService.getTerm(regularTestList.getFirst().getDate()) == termAndYearService.getTerm()) {

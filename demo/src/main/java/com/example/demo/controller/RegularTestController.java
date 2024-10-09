@@ -188,23 +188,19 @@ public class RegularTestController {
     }
     @PostMapping("/submitSchoolSelection")
     public String submitSchoolSelection(@RequestParam List<Integer> selectedSchoolIds,
-                                        @Validated RegularTestForm1 regularTestForm1,
-                                        BindingResult result,
+                                        @RequestParam("grade")Integer grade,
+                                        @RequestParam("semester")Integer semester,
+                                        @RequestParam("isMid")Integer isMid,
                                         RedirectAttributes redirectAttributes) {
         //エラーがあったらもとのフォームに戻る
-        if(result.hasErrors()){
+        if(grade==null||semester==null||isMid==null||selectedSchoolIds==null){
             System.out.println("エラーがありました。");
-            redirectAttributes.addFlashAttribute("regularTestForm1",regularTestForm1);
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX
-            +Conventions.getVariableName(regularTestForm1),result);
+            redirectAttributes.addFlashAttribute("hasError",true);
             redirectAttributes.addFlashAttribute("selectedSchoolIds",selectedSchoolIds);
             return "redirect:/createRegularTest";
         }else{
             Date sqlToday = termAndYearService.getSqlToday();
             Integer thisTerm = termAndYearService.getTerm();
-            Integer grade = regularTestForm1.getGrade();
-            Integer semester  = regularTestForm1.getSemester();
-            Integer isMid = regularTestForm1.getIsMid();
 
             //エラーがなければテストを作成する。
             // しかし、すでにDBに同じ学年同じ年度、同じ学期、同じ中間か期末の物があったら新規で作ってはならない。
