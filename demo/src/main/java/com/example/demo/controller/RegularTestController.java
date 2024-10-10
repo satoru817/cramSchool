@@ -216,29 +216,29 @@ public class RegularTestController {
                                                        @RequestParam("grade")Integer grade,
                                                        @RequestParam("semester")Integer semester,
                                                        @RequestParam("isMid")Integer isMid,
-                                                       RedirectAttributes redirectAttributes){
+                                                       RedirectAttributes redirectAttributes) {
         Date sqlToday = termAndYearService.getSqlToday();
         Integer thisTerm = termAndYearService.getTerm();
-        Optional<RegularTestSet> optionalRegularTestSet = regularTestSetRepository.findByGradeAndTermAndIsMidAndSemester(grade,thisTerm,isMid,semester);//TODO こっちは多分大丈夫
+        Optional<RegularTestSet> optionalRegularTestSet = regularTestSetRepository.findByGradeAndTermAndIsMidAndSemester(grade, thisTerm, isMid, semester);//TODO こっちは多分大丈夫
 
         RegularTestSet regularTestSet = new RegularTestSet();
-        if(optionalRegularTestSet.isEmpty()){
+        if (optionalRegularTestSet.isEmpty()) {
             regularTestSet.setGrade(grade);
             regularTestSet.setSemester(semester);
             regularTestSet.setTerm(thisTerm);
             regularTestSet.setIsMid(isMid);
             regularTestSetRepository.save(regularTestSet);
-        }else{
+        } else {
             regularTestSet = optionalRegularTestSet.get();
         }
 
-        for (Integer id : selectedSchoolIds){
+        for (Integer id : selectedSchoolIds) {
             School school = schoolService.fetchById(id);
             //TODO ここが論理的におかしい。regularTestRepositoryにメソッドを書きなおす必要がある。書きなおした
             //TODO　今はテスト期間中の短い期間の転校は反映できない。
-            Optional<RegularTest> optionalRegularTest = regularTestRepository.getBySchoolAndRegularTestSet(school,regularTestSet);
+            Optional<RegularTest> optionalRegularTest = regularTestRepository.getBySchoolAndRegularTestSet(school, regularTestSet);
             //Optional<RegularTest> optionalRegularTest = regularTestService.getBySchoolAndGradeAndSemesterAndIsMidAndTerm(school,grade,semester,isMid,thisTerm);//こっちがダメっぽい
-            if(optionalRegularTest.isEmpty()){//
+            if (optionalRegularTest.isEmpty()) {//
                 RegularTest regularTest = new RegularTest();
                 regularTest.setRegularTestSet(regularTestSet);//新たに追加した
                 regularTest.setSchool(school);
@@ -250,6 +250,7 @@ public class RegularTestController {
                 System.out.println(termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade));//TODO この関数が間違ってる。->直した
 
                 //TODO 真下のメソッドが循環参照を生んでいるようだ。一旦なくす。
+                //TODO 本当はここで対応する全員のRegularTestResultを作成したかった。
 //                List<SchoolStudent> schoolStudentList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school,termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade), termAndYearService.getSqlToday());
 //                System.out.println("schoolStudentList:" + schoolStudentList);
 //                if(!schoolStudentList.isEmpty()){
@@ -264,11 +265,11 @@ public class RegularTestController {
 //                    }
 //                }
 //            }
+            }
+            return "redirect:/showAllRegularTest";
+
+
         }
-        return "redirect:/showAllRegularTest";
-
-
-    }
 
 //    //TODO このメソッドにエラーがある。同じ学年同じ学期おなじisMidのテストを登録しようとするとエラーが
 //    // 出る。regular_test_set_id がnullになっているらしい。regularTestを保存するときにエラーが出ている 改修済み　条件分岐のミス
@@ -349,14 +350,20 @@ public class RegularTestController {
 //
 //
 //
-//        return "redirect:/showAllRegularTest";
+//
 //
 //    }
 //
 //
+        return "redirect:/showAllRegularTest";
+    }
 
-
-
+    @GetMapping("/showAllRegularTestInChunks")
+    public String showAllRegularTestInChunks(Model model){
+        List<RegularTestSet> regularTestSetList = regularTestSetRepository.findAll();
+        model.addAttribute("regularTestSetList",regularTestSetList);
+        return "/regularTest/showAllRegularTestInChunks";
+    }
 
 
 }

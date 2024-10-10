@@ -6,7 +6,7 @@
 </head>
 <body>
 <div th:replace="~{fragment::header}"></div>
-<h1>定期テスト</h1>
+<h1>定期テスト：学校ごと</h1>
 <ul>
   <li th:each="test : ${regularTestShowList}">
     <span th:text="${test.term}+'年度'"></span>
