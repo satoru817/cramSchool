@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import com.example.demo.dto.StudentShow;
-import com.example.demo.form.StudentForm;
+import com.example.demo.dto.StudentForm;
 
 import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;

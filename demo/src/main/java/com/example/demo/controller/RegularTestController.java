@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.SchoolForm;
+import com.example.demo.dto.Subjects;
 import com.example.demo.entity.*;
 import com.example.demo.dto.RegularTestForm;
 import com.example.demo.repository.RegularTestResultRepository;
@@ -15,15 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
@@ -55,7 +55,7 @@ public class RegularTestController {
     }
 
     @PostMapping("/submitRegularTest")
-    public String submitRegularTest(@Validated RegularTestForm regularTestForm,
+    public String submitRegularTest(@ModelAttribute RegularTestForm regularTestForm,
                                     BindingResult result,
                                     RedirectAttributes redirectAttributes,
                                     Model model){
@@ -87,55 +87,81 @@ public class RegularTestController {
         model.addAttribute("regularTestShowList",regularTestShowList);
         return "regularTest/showAllRegularTest";
     }
-    //TODO:regularTestSetを取ってきて、年度、学年、学期、isMidの情報をviewに渡す。
+    //TODO:regularTestSetを取ってきて、年度、学年、学期、isMidの情報をviewに渡す。OK
+    //TODO:平均くんに紐づけて平均を登録できるようにする必要がある。つまり、regular_test_resultに平均くんの結果を保
+    // 存する。すでに平均くんがそのテストに関して存在していたら、その結果を取ってこないと
+    // 行けない。OK
     @GetMapping("/regularTestEdit/{id}")
-    public String regularTestEdit(@PathVariable("id")Integer id,Model model){
+    public String regularTestEdit(@PathVariable("id")Integer regularTestId,Model model){
 
+        RegularTest regularTest = regularTestService.fetchById(regularTestId);
+        model.addAttribute("regularTest",regularTest);//学校情報を画面で表示するために使う
 
-        Integer isEdit = 1;
+        RegularTestResult regularTestResult;
+        Student ave = studentService.getById(1); // 平均くん。
+        Optional<RegularTestResult> optionalRegularTestResult = regularTestResultService.getRegularTestResultByRegularTestAndStudent(regularTest, ave);
+
+        // 既にaveくんのテスト結果が作られていない時だけ、デフォルトのRegularTestResultインスタンスを作成
+        regularTestResult = optionalRegularTestResult.orElseGet(RegularTestResult::new);
+        regularTestResult.setStudent(ave);
+        regularTestResult.setRegularTest(regularTest);
+
+        model.addAttribute("regularTestResult",regularTestResult);
+
+        Boolean isEdit = true;
         model.addAttribute("isEdit",isEdit);
-        model.addAttribute("regularTestId",id);//これで見分ける。
-
-        RegularTest regularTest = regularTestService.fetchById(id);
-        model.addAttribute("regularTest",regularTest);
+        model.addAttribute("regularTestId",regularTestId);//これで返ってきた時にテストを見分ける。
 
         RegularTestSet regularTestSet = regularTest.getRegularTestSet();
         model.addAttribute("regularTestSet",regularTestSet);
 
+
         RegularTestForm regularTestForm = regularTestConverter.fromRegularTestToRegularTestForm(regularTest);
+        model.addAttribute("regularTestForm",regularTestForm);
+
+
+        Subjects subjects = new Subjects();
+        model.addAttribute("subjects", subjects);
 
 
 
         return "regularTest/createRegularTest";
 
     }
+    @PostMapping("/updateRegularTest/average/{id}")
+    public String updateReqularTestAverage(@PathVariable("id")Integer regularTestId,
+                                           @ModelAttribute RegularTestResult regularTestResult){
+        System.out.println(regularTestResult);
+        RegularTest regularTest = regularTestService.fetchById(regularTestId);
+        Student ave = studentService.getById(1);
+
+        regularTestResult.setRegularTest(regularTest);
+        regularTestResult.setStudent(ave);
+        regularTestResultService.save(regularTestResult);
+        return "redirect:/showAllRegularTest";//TODO ここは改修が必要
+    }
 
     @PostMapping("/updateRegularTest/{id}")
-    public String updateRegularTest(@PathVariable("id")Integer id,
-                                    @Validated RegularTestForm regularTestForm,
-                                    BindingResult result,
+    public String updateRegularTest(@PathVariable("id")Integer regularTestId,
+                                    @ModelAttribute RegularTestForm regularTestForm,
                                     RedirectAttributes redirectAttributes,
                                     Model model){
         System.out.println(regularTestForm);
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("isEdit",1);
-            redirectAttributes.addFlashAttribute("id",id);
-            redirectAttributes.addFlashAttribute("regularTestForm", regularTestForm);
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + Conventions.getVariableName(regularTestForm));
-            return "redirect:/regularTestCreate";
-        } else {
+
+            //TODO regularTestを更新する。OK
+            // またaveのテスト結果も更新する。まずregularTestIdで該当するregularTestを取ってくる必要がある
+            // RegularTestResultのIdも取ってくる必要があったそれが出来ていない。そのIdを利用して更新する。input type=hiddenを使えば良いんだ。
             System.out.println("Saving RegularTest: " + regularTestForm);
-            RegularTest regularTest = regularTestConverter.RegularTestFormToRegularTest(regularTestForm);
-            regularTest.setRegularTestId(id);
-            try {
-                regularTestService.save(regularTest);
-                System.out.println("Saved RegularTest successfully!");
-            } catch (Exception e) {
-                System.err.println("Error saving RegularTest: " + e.getMessage());
-                e.printStackTrace();
-            }
+            RegularTest regularTest = regularTestService.fetchById(regularTestId);
+            regularTestConverter.setDataFromRegularTestFormToRegularTest(regularTestForm,regularTest);
+            regularTestService.save(regularTest);
+
+            Student ave = studentService.getById(1);
+
+
+
             return "redirect:/showAllRegularTest";//ここはおかしい。
-        }
+
 
 
     }
@@ -180,10 +206,10 @@ public class RegularTestController {
 
         List<Integer> selectedSchoolIds = new ArrayList<>();
 
-        return "regularTest/createRegularTest1"; // Thymeleafテンプレート名
+        return "regularTest/createRegularTestAllAtOnce";
     }
     @Transactional
-    @PostMapping("/submitSchoolSelection")
+    @PostMapping("/doCreateRegularTestSetAndRegularTests")
     public String doCreateRegularTestSetAndRegularTests(@RequestParam List<Integer> selectedSchoolIds,
                                         @RequestParam("grade")Integer grade,
                                         @RequestParam("semester")Integer semester,

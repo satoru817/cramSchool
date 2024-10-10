@@ -40,4 +40,6 @@ public class RegularTestService {
     public RegularTest fetchById(Integer id){
         return regularTestRepository.getById(id);
     }
+
+
 }

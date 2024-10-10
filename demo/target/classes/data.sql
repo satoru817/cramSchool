@@ -47,3 +47,6 @@ insert ignore into status(status_id,name) values
 (2,'個別'),
 (3,'体験'),
 (4,'本科');
+
+insert ignore into students(id,el1,code,name) values
+(1,1,1,'average');--全てのテストの平均点を紐づける平均くん

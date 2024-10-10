@@ -1,84 +1,127 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title th:text="${isEdit ? 'テスト編集フォーム' : 'テスト登録フォーム'}"></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <div th:replace="~{fragment::head}"></div>
-    <title th:unless="${isEdit}">テスト登録フォーム</title>
-    <title th:if="${isEdit}">テスト編集フォーム</title>
 </head>
 <body>
 <div th:replace="~{fragment::header}"></div>
-<h2 th:unless="${isEdit}">テスト登録フォーム</h2>
-<h2 th:if="${isEdit}" th:text="${regularTestSet.term}+'年度'+${regularTest.getSchool().getName()} + ${regularTestSet.grade} +'学年' +${regularTest.semester} +'学期'+ "></h2>
-<form th:action="${isEdit == null ? '/submitRegularTest' : (isEdit == 1 ? '/updateRegularTest/' + regularTestId : '')}"
-      th:object="${regularTestForm}"
-      method="post">
+<!--TODO エラー文を表示出来るようにしたい。-->
+<div class="container mt-4">
+    <h2 class="mb-4" th:text="${isEdit ?
+            (regularTestSet.term + '年度 ' + regularTest.getSchool().getName() +  regularTestSet.grade + '学年 ' + regularTestSet.semester + '学期 ' + (regularTestSet.isMid == 1 ? '中間' : '期末')) :
+            'テスト登録フォーム'}"></h2>
 
+    <form th:action="${'/updateRegularTest/' + regularTestId }"  method="post" th:object="${regularTestForm}">
+        <div class="form-group">
+            <label for="date">実施日</label>
+            <input type="date" class="form-control" th:field="*{date}" required>
+        </div>
 
-    <br>
-    <label for="date">実施日</label>
-    <input type="date" th:field="*{date}"   required>
+        <h3 class="mt-4">科目別満点</h3>
+        <div class="form-group">
+            <label for="japanese">国語</label>
+            <input type="number" class="form-control" th:field="*{japanese}" min="0" required>
+        </div>
 
+        <div class="form-group">
+            <label for="math">数学</label>
+            <input type="number" class="form-control" th:field="*{math}" min="0" required>
+        </div>
 
-    <div th:if="${#fields.hasErrors('date')}" th:errors="*{date}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="english">英語</label>
+            <input type="number" class="form-control" th:field="*{english}" min="0" required>
+        </div>
 
-    <br>
-    <label for="grade">学年</label>
-    <label>
-        <input type="radio" th:field="*{grade}" value="1" required>中学1年生
-    </label>
-    <label>
-        <input type="radio" th:field="*{grade}" value="2">中学2年生
-    </label>
-    <label>
-        <input type="radio" th:field="*{grade}" value="3">中学3年生
-    </label>
-    <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="science">理科</label>
+            <input type="number" class="form-control" th:field="*{science}" min="0" required>
+        </div>
 
-    <br>
+        <div class="form-group">
+            <label for="social">社会</label>
+            <input type="number" class="form-control" th:field="*{social}" min="0" required>
+        </div>
 
+        <div class="form-group">
+            <label for="music">音楽</label>
+            <input type="number" class="form-control" th:field="*{music}" min="0" required>
+        </div>
 
-    <br>
-    <h3>科目別満点</h3>
+        <div class="form-group">
+            <label for="art">美術</label>
+            <input type="number" class="form-control" th:field="*{art}" min="0" required>
+        </div>
 
-    <label for="japanese">国語</label>
-    <input type="number" th:field="*{japanese}" min="0" required>
-    <div th:if="${#fields.hasErrors('japanese')}" th:errors="*{japanese}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="tech">技術</label>
+            <input type="number" class="form-control" th:field="*{tech}" min="0" required>
+        </div>
 
-    <label for="math">数学</label>
-    <input type="number" th:field="*{math}" min="0" required>
-    <div th:if="${#fields.hasErrors('math')}" th:errors="*{math}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="pe">体育</label>
+            <input type="number" class="form-control" th:field="*{pe}" min="0" required>
+        </div>
+        <button class="btn btn-warning" th:if="${isEdit}" type="submit">編集結果登録</button>
+    </form>
 
-    <label for="english">英語</label>
-    <input type="number" th:field="*{english}" min="0"  required>
-    <div th:if="${#fields.hasErrors('english')}" th:errors="*{english}" style="color:red;"></div>
+    <form th:action="${'/updateRegularTest/average/' + regularTestId }"  method="post" th:object="${regularTestResult}">
+        <hr>
+        <h3 class="mt-4">平均点登録</h3>
+        <input type="hidden" th:field="*{id}">
+        <div class="form-group">
+            <label for="japanese">国語</label>
+            <input type="number" class="form-control" th:field="*{japanese}" min="0">
+        </div>
 
-    <label for="science">理科</label>
-    <input type="number" th:field="*{science}" min="0"  required>
-    <div th:if="${#fields.hasErrors('science')}" th:errors="*{science}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="math">数学</label>
+            <input type="number" class="form-control" th:field="*{math}" min="0">
+        </div>
 
-    <label for="social">社会</label>
-    <input type="number" th:field="*{social}" min="0"  required>
-    <div th:if="${#fields.hasErrors('social')}" th:errors="*{social}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="english">英語</label>
+            <input type="number" class="form-control" th:field="*{english}" min="0">
+        </div>
 
-    <label for="music">音楽</label>
-    <input type="number" th:field="*{music}" min="0"  required>
-    <div th:if="${#fields.hasErrors('music')}" th:errors="*{music}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="science">理科</label>
+            <input type="number" class="form-control" th:field="*{science}" min="0">
+        </div>
 
-    <label for="art">美術</label>
-    <input type="number" th:field="*{art}" min="0" required>
-    <div th:if="${#fields.hasErrors('art')}" th:errors="*{art}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="social">社会</label>
+            <input type="number" class="form-control" th:field="*{social}" min="0">
+        </div>
 
-    <label for="tech">技術</label>
-    <input type="number" th:field="*{tech}" min="0" required>
-    <div th:if="${#fields.hasErrors('tech')}" th:errors="*{tech}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="music">音楽</label>
+            <input type="number" class="form-control" th:field="*{music}" min="0">
+        </div>
 
-    <label for="pe">体育</label>
-    <input type="number" th:field="*{pe}" min="0"  required>
-    <div th:if="${#fields.hasErrors('pe')}" th:errors="*{pe}" style="color:red;"></div>
+        <div class="form-group">
+            <label for="art">美術</label>
+            <input type="number" class="form-control" th:field="*{art}" min="0">
+        </div>
 
-    <br>
-    <button th:unless="${isEdit}" type="submit">新規登録</button>
-    <button th:if="${isEdit}" type="submit">編集結果登録</button>
-</form>
+        <div class="form-group">
+            <label for="tech">技術</label>
+            <input type="number" class="form-control" th:field="*{tech}" min="0">
+        </div>
+
+        <div class="form-group">
+            <label for="pe">体育</label>
+            <input type="number" class="form-control" th:field="*{pe}" min="0">
+        </div>
+
+        <button class="btn btn-warning"  type="submit">編集結果登録</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

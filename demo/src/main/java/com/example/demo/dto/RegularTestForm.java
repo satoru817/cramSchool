@@ -9,23 +9,12 @@ import java.util.Date;
 @Data
 public class RegularTestForm {
     // idが無い、Schoolの情報をIdで保持することに注意
-    @NotNull(message = "学校を選択してください")
-    private Integer schoolId;
 
     @NotNull(message = "実施日を選択してください")
     @DateTimeFormat(pattern = "yyyy-MM-dd")//date picker利用の為にこうしている
     private Date date;
 
-    @Min(value = 1, message = "学年は1以上である必要があります")
-    @Max(value = 3, message = "学年は3以下である必要があります")
-    private Integer grade;
-
-    @NotNull(message="学期を選んでください")
-    private Integer semester;
-
-    @NotNull(message = "中間か期末を選択してください")
-    private Integer isMid; // 中間か期末：期末は0,中間は１
-
+    //これ以下の属性は満点がいくらなのかを運ぶ為にある。
     @Min(value = 0, message = "得点は0以上である必要があります")
     private Integer japanese;
 

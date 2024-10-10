@@ -1,4 +1,4 @@
-package com.example.demo.form;
+package com.example.demo.dto;
 
 import com.example.demo.entity.Student;
 import jakarta.validation.constraints.Min;

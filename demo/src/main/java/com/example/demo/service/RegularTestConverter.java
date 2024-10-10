@@ -20,12 +20,8 @@ public class RegularTestConverter {
     private final RegularTestSetRepository regularTestSetRepository;
 
     public RegularTest RegularTestFormToRegularTest(RegularTestForm regularTestForm) {
-        // Fetch the school entity based on the schoolId
-        School school = schoolService.fetchById(regularTestForm.getSchoolId());
 
-        // Create a new RegularTest entity and set its properties
         RegularTest regularTest = new RegularTest();
-        regularTest.setSchool(school);
         regularTest.setDate(new java.sql.Date(regularTestForm.getDate().getTime()));
         regularTest.setJapanese(regularTestForm.getJapanese());
         regularTest.setMath(regularTestForm.getMath());
@@ -40,9 +36,21 @@ public class RegularTestConverter {
         return regularTest;
     }
 
+    public void setDataFromRegularTestFormToRegularTest(RegularTestForm regularTest, RegularTest form){
+        form.setDate(new java.sql.Date(regularTest.getDate().getTime()));
+        form.setJapanese(regularTest.getJapanese());
+        form.setMath(regularTest.getMath());
+        form.setEnglish(regularTest.getEnglish());
+        form.setScience(regularTest.getScience());
+        form.setSocial(regularTest.getSocial());
+        form.setMusic(regularTest.getMusic());
+        form.setArt(regularTest.getArt());
+        form.setTech(regularTest.getTech());
+        form.setPe(regularTest.getPe());
+    }
+
     public RegularTestForm fromRegularTestToRegularTestForm(RegularTest regularTest) {
         RegularTestForm form = new RegularTestForm();
-        form.setSchoolId(regularTest.getSchool() != null ? regularTest.getSchool().getId() : null); // Assuming School has a method getSchoolId()
         form.setDate(regularTest.getDate() != null ? new java.util.Date(regularTest.getDate().getTime()) : null);
 
         form.setJapanese(regularTest.getJapanese());

@@ -20,7 +20,7 @@
 <div th:replace="~{fragment::header}"></div>
 <div class="container mt-5">
   <h1 class="mb-4">定期テスト作成画面</h1><!--とりあえず、現在のテストを入力できるようにしよう。いつか改修して過去のテストを入力出来る画面も作ろう-->
-  <form th:action="@{/submitSchoolSelection}" method="post" th:object="${regularTestForm1}">
+  <form th:action="@{/doCreateRegularTestSetAndRegularTests}" method="post" th:object="${regularTestForm1}">
 
     <!-- 学年選択 -->
     <div class="form-group">

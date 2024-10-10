@@ -1,7 +1,5 @@
-package com.example.demo.form;
+package com.example.demo.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
