@@ -1,15 +1,13 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.KlassStudent;
-import com.example.demo.entity.RegularTest;
-import com.example.demo.entity.School;
-import com.example.demo.entity.Student;
+import com.example.demo.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface RegularTestRepository extends JpaRepository<RegularTest,Integer> {
     public List<RegularTest> findAll();
@@ -22,4 +20,7 @@ public interface RegularTestRepository extends JpaRepository<RegularTest,Integer
             "AND rts.semester = :semester " +
             "AND rts.isMid = :isMid" )
     public List<RegularTest> getBySchoolAndGradeAndSemesterAndIsMidOrderByDateDesc(@Param("school") School school,@Param("grade")Integer grade,@Param("semester")Integer semester,@Param("isMid")Integer isMid);
+
+    Optional<RegularTest> getBySchoolAndRegularTestSet(School school, RegularTestSet regularTestSet);
+
 }

@@ -47,6 +47,4 @@ public class RegularTestResult {
     @Column(name="pe")
     private Integer pe;
 
-
-
 }

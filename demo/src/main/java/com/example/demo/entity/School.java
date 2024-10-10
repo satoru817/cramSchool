@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class School {
     @NotBlank(message="学校名を入力してください")
     private String name;
 
-    @OneToMany(mappedBy = "school")
-    private List<SchoolStudent> schoolStudents; // Connection to SchoolStudent
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "school")
+//    private List<SchoolStudent> schoolStudents; // Connection to SchoolStudent
 }

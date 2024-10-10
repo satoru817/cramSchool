@@ -10,7 +10,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
-
+    @Query("select s from Student s " +
+            "where s.id != 1")
+    public List<Student> getAllWithoutAverageMan();
 
     Student getByCode(Long code);
 
@@ -20,10 +22,10 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
 
     @Query("SELECT s FROM Student s " +
-            "JOIN s.schoolStudents ss " +
+            "JOIN s.schoolStudents k " +
             "WHERE s.el1 = :el1 " +
-            "AND ss.school.id = :schoolId " +
-            "AND :specificDate BETWEEN ss.createdAt AND ss.changedAt")
+            "AND k.school.id = :schoolId " +
+            "AND :specificDate BETWEEN k.createdAt AND k.changedAt")
     List<Student> findStudentsByEl1AndDateRangeAndSchoolId(
             @Param("el1") Integer el1,
             @Param("specificDate") LocalDate specificDate,

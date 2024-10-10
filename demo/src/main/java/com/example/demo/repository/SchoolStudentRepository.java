@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -16,12 +17,12 @@ public interface SchoolStudentRepository extends JpaRepository<SchoolStudent,Int
 
    List<SchoolStudent> findByStudentIdOrderByCreatedAtAsc(Integer studentId);
 
-   @Query("SELECT ss FROM SchoolStudent ss " +
-           "JOIN ss.student s " +
+   @Query("SELECT k FROM SchoolStudent k " +
+           "JOIN k.student s " +
            "WHERE s.el1 = :el1 " +
-           "AND ss.school = :school " +
-           "AND :date BETWEEN ss.createdAt AND ss.changedAt " +
-           "ORDER BY s.id DESC ")
-   List<SchoolStudent> findSchoolStudentBySchoolAndDateAndEl1(@Param("school")School school, @Param("el1")Integer el1, @Param("date")java.sql.Date date);
+           "AND k.school = :school " +
+           "AND :date BETWEEN k.createdAt AND k.changedAt " )
+   List<SchoolStudent> findSchoolStudentBySchoolAndDateAndEl1(@Param("school") School school, @Param("el1") Integer el1, @Param("date") java.sql.Date date);
+
 }
 

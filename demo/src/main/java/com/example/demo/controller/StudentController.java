@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 import com.example.demo.entity.*;
 import com.example.demo.repository.StatusRepository;
+import com.example.demo.repository.StudentRepository;
 import com.example.demo.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
@@ -34,6 +35,7 @@ public class StudentController {
     private final StatusService statusService;
     private final StatusStudentService statusStudentService;
     private final StatusRepository statusRepository;
+    private final StudentRepository studentRepository;
 
 
     ArrayList<String> gradeList = new ArrayList<>(Arrays.asList("未就学","小１","小２","小３","小４","小５","小６","中１","中２","中３","高１","高２","高３"));
@@ -113,7 +115,7 @@ public class StudentController {
     //TODO:エラーが発生しました。メソッド名：getLast, 例外クラス名：java.util.NoSuchElementException
     @GetMapping("/studentShow")
     public String studentShow_g(Model model) {
-        List<Student> studentList = studentService.fetchAll();//こっちは大丈夫そう
+        List<Student> studentList = studentRepository.getAllWithoutAverageMan();//こっちは大丈夫そう
         List<StudentShow> studentShows = convertToStudentShowList(studentList);//これを書き換えなければstudentshowを書き換えないと
 
         model.addAttribute("studentShows", studentShows);

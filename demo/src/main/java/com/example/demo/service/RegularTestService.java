@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -14,13 +15,13 @@ public class RegularTestService {
     private final RegularTestRepository regularTestRepository;
     private final TermAndYearService termAndYearService;
 
-    public RegularTest getBySchoolAndGradeAndSemesterAndIsMidAndTerm(School school, Integer grade, Integer semester, Integer isMid, Integer thisTerm) {
+    public Optional<RegularTest> getBySchoolAndGradeAndSemesterAndIsMidAndTerm(School school, Integer grade, Integer semester, Integer isMid, Integer thisTerm) {
         List<RegularTest> regularTestList = regularTestRepository.getBySchoolAndGradeAndSemesterAndIsMidOrderByDateDesc(school,grade,semester,isMid);
         if(regularTestList.isEmpty()){//nullpointerexcption回避
-            return null;
+            return null;//これがダメなのかな
         }else {
-            if (TermAndYearService.getTerm(regularTestList.getFirst().getDate()) == termAndYearService.getTerm()) {
-                return regularTestList.getFirst();
+            if (TermAndYearService.getTerm(regularTestList.getFirst().getDate()).equals(termAndYearService.getTerm())) {
+                return Optional.ofNullable(regularTestList.getFirst());
             } else {
                 return null;
             }

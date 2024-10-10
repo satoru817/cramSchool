@@ -62,8 +62,8 @@ public class TermAndYearService {
         return grade;
     }
 
-    //小学一年生は高校3年生は12の数値から小学校入学時(3/31)時点の西暦を算出する関数
-    public int getWhenEnteredElementarySchool(int grade){
+    //小学一年生は1高校3年生は12の数値から小学校入学時(3/31)時点の西暦を算出する関数
+    public int getWhenEnteredElementarySchool(int abGrade){
 
         // 今年の4月1日を取得
         LocalDate thisYearApril1 = this.getThisYearApril1();
@@ -75,10 +75,14 @@ public class TermAndYearService {
         int currentYear = this.getCurrentYear();
 
         if(today.isBefore(thisYearApril1)){
-            return currentYear - grade;
+            return currentYear - abGrade;
         }else{
-            return currentYear + 1 - grade;
+            return currentYear + 1 - abGrade;
         }
+    }
+
+    public int getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(int jhGrade){
+        return getWhenEnteredElementarySchool(jhGrade+6);
     }
 
     //現在の年度を取得する関数
