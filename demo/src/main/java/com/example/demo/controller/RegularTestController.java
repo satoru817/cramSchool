@@ -365,6 +365,10 @@ public class RegularTestController {
         return "/regularTest/showAllRegularTestInChunks";
     }
 
+    //TODO:testSet　のidで対応するtestを全て取ってきて、それに該当する生徒を全員まとめる？
+    @GetMapping("/regularTestResultChunkEdit/{id}")
+    public
+
 
 }
 
