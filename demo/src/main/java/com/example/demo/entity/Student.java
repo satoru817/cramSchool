@@ -6,10 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Optional;
 
-@Entity
 @Data
+@Entity
 @Table(name="students")
 public class Student {
     @Id
@@ -21,13 +20,12 @@ public class Student {
     private Long code;
 
     @Column(name="el1")
-    private Integer el1;//小学校に入学した時の西暦が入る。学年判定用。
+    private Integer el1;
 
     @Column(name="name")
     private String name;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "student")
-    private List<SchoolStudent> schoolStudents; // Connection to SchoolStudent
-
+    @JsonIgnore // これで循環参照を防ぎます
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    private List<SchoolStudent> schoolStudents;
 }

@@ -20,7 +20,7 @@ public class School {
     @NotBlank(message="学校名を入力してください")
     private String name;
 
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "school")
-//    private List<SchoolStudent> schoolStudents; // Connection to SchoolStudent
+    @JsonIgnore // これで循環参照を防ぎます
+    @OneToMany(mappedBy = "school", fetch = FetchType.LAZY) // 遅延ロードも考慮
+    private List<SchoolStudent> schoolStudents;
 }

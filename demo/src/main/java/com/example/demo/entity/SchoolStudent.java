@@ -5,8 +5,8 @@ import lombok.Data;
 
 import java.sql.Date;
 
-@Entity
 @Data
+@Entity
 @Table(name="school_student")
 public class SchoolStudent {
     @Id
@@ -14,11 +14,11 @@ public class SchoolStudent {
     @Column(name="id")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // 遅延ロードを使うことでパフォーマンス向上
     @JoinColumn(name="school_id")
     private School school;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="student_id")
     private Student student;
 

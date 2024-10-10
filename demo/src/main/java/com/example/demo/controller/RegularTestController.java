@@ -249,21 +249,21 @@ public class RegularTestController {
                 System.out.println(school.getName());
                 System.out.println(termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade));//TODO この関数が間違ってる。->直した
 
-                //TODO 真下のメソッドが循環参照を生んでいるようだ。
-                List<SchoolStudent> schoolStudentList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school,termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade), termAndYearService.getSqlToday());
-                System.out.println("schoolStudentList:" + schoolStudentList);
-                if(!schoolStudentList.isEmpty()){
-                    for(SchoolStudent ss:schoolStudentList){
-                        System.out.println("SchoolStudent:" + ss);
-                        //TODO:ssに対応した全点数nullのRegularTestResultを作成する
-                        RegularTestResult regularTestResult = new RegularTestResult();
-                        regularTestResult.setRegularTest(regularTest);
-                        regularTestResult.setStudent(ss.getStudent());
-                        regularTestResultRepository.save(regularTestResult);
-
-                    }
-                }
-            }
+                //TODO 真下のメソッドが循環参照を生んでいるようだ。一旦なくす。
+//                List<SchoolStudent> schoolStudentList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school,termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade), termAndYearService.getSqlToday());
+//                System.out.println("schoolStudentList:" + schoolStudentList);
+//                if(!schoolStudentList.isEmpty()){
+//                    for(SchoolStudent ss:schoolStudentList){
+//                        System.out.println("SchoolStudent:" + ss);
+//                        //TODO:ssに対応した全点数nullのRegularTestResultを作成する
+//                        RegularTestResult regularTestResult = new RegularTestResult();
+//                        regularTestResult.setRegularTest(regularTest);
+//                        regularTestResult.setStudent(ss.getStudent());
+//                        regularTestResultRepository.save(regularTestResult);
+//
+//                    }
+//                }
+//            }
         }
         return "redirect:/showAllRegularTest";
 

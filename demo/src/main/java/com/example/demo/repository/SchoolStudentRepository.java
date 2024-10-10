@@ -19,8 +19,9 @@ public interface SchoolStudentRepository extends JpaRepository<SchoolStudent,Int
 
    @Query("SELECT k FROM SchoolStudent k " +
            "JOIN k.student s " +
+           "JOIN k.school sl " +
            "WHERE s.el1 = :el1 " +
-           "AND k.school = :school " +
+           "AND sl = :school " +
            "AND :date BETWEEN k.createdAt AND k.changedAt " )
    List<SchoolStudent> findSchoolStudentBySchoolAndDateAndEl1(@Param("school") School school, @Param("el1") Integer el1, @Param("date") java.sql.Date date);
 
