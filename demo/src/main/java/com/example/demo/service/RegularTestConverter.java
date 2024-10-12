@@ -90,6 +90,16 @@ public class RegularTestConverter {
         return regularTestShow;
     }
 
+    public RegularTestShow regularTestSetToRegularTestShow(RegularTestSet regularTestSet){
+        RegularTestShow regularTestShow = new RegularTestShow();
+        regularTestShow.setSemester(regularTestSet.getSemester());
+        regularTestShow.setTerm(regularTestSet.getTerm());
+        regularTestShow.setIsMid(regularTestSet.getIsMid());
+        regularTestShow.setGrade(regularTestSet.getGrade());
+
+        return regularTestShow;
+    }
+
 }
 
 //RegularTestとRegularTestFormのコンバーター

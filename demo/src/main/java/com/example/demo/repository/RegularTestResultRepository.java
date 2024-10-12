@@ -17,6 +17,18 @@ public interface RegularTestResultRepository extends JpaRepository<RegularTestRe
             "where rtr.regular_test_id = :regularTestId",
     nativeQuery = true)
     public List<RegularTestResult> findByRegularTestId(@Param("regularTestId")Integer regularTestId);
+    //TODO:このクエリがあってるかテストが必要
+    @Query(value="SELECT rtr.regular_test_result_id, rtr.regular_test_id , rtr.student_id, " +
+            "rtr.japanese, rtr.math, rtr.english, " +
+            "rtr.science, rtr.social, rtr.music, " +
+            "rtr.art, rtr.tech, rtr.pe " +
+            "FROM regular_test_result rtr " +
+            "JOIN regular_test rt ON rt.regular_test_id = rtr.regular_test_id " +
+            "JOIN regular_test_set rts ON rts.regular_test_set_id = rt.regular_test_set_id " +
+            "WHERE rts.regular_test_set_id = :regularTestSetId",
+            nativeQuery = true)
+    List<RegularTestResult> findByRegularTestSetId(@Param("regularTestSetId") Integer regularTestSetId);
+
 }
 
 

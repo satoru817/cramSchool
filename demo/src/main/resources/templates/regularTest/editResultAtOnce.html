@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang ="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragment::head}"></div>
+    <title>定期試験結果編集</title>
+</head>
+
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5">
+
+    <h2><span th:text="${regularTestShow.term}+'年度'"></span>
+        <span th:text="${regularTestShow.grade}+'年生'"></span>
+        <span th:text="${regularTestShow.semester}+'学期'"></span>
+        <span th:if="${regularTestShow.isMid == 0}" th:text="'期末テスト'"></span>
+        <span th:if="${regularTestShow.isMid == 1}" th:text="'中間テスト'"></span>結果確認・編集画面</h2>
+
+
+    <!-- 成功メッセージの表示 -->
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+
+    <form th:action="@{/RegularTestResultUpdateAtOnce}" method="post">
+        <!-- 隠しフィールドに regularTestId を追加 -->
+        <input type="hidden" th:name="'regularTestSetId'" th:value="${regularTestSetId}"/>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>学生名</th>
+                <th>国語</th>
+                <th>数学</th>
+                <th>英語</th>
+                <th>理科</th>
+                <th>社会</th>
+                <th>音楽</th>
+                <th>美術</th>
+                <th>技術</th>
+                <th>保体</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result : ${regularTestResultShowList}">
+                <input type="hidden" th:name="'id_' + ${result.id}" th:value="${result.id}"/>
+                <td th:text="${result.studentName}"></td>
+                <td>
+                    <input type="number" th:name="'japanese_' + ${result.id}" th:value="${result.japanese != null ? result.japanese : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'math_' + ${result.id}" th:value="${result.math != null ? result.math : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'english_' + ${result.id}" th:value="${result.english != null ? result.english : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'science_' + ${result.id}" th:value="${result.science != null ? result.science : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'social_' + ${result.id}" th:value="${result.social != null ? result.social : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'music_' + ${result.id}" th:value="${result.music != null ? result.music : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'art_' + ${result.id}" th:value="${result.art != null ? result.art : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'tech_' + ${result.id}" th:value="${result.tech != null ? result.tech : 0}" class="form-control"/>
+                </td>
+                <td>
+                    <input type="number" th:name="'pe_' + ${result.id}" th:value="${result.pe != null ? result.pe : 0}" class="form-control"/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Save Results</button>
+    </form>
+</div>
+<div th:replace="~{fragment::footer}"></div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

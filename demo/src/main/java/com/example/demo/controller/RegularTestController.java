@@ -225,7 +225,7 @@ public class RegularTestController {
                 //TODO 真下のメソッドが循環参照を生んでいるようだ。一旦なくす。
                 //TODO 本当はここで対応する全員のRegularTestResultを作成したかった。
                 //TODO JPQLを使うと循環参照を生んでそれが難しそうだから、ネイティブクエリでstudentのidを取ってきて
-                // Studentを作成して、何とかしようかな。、
+                // Studentを作成して、何とかしようかな。、->student_idだけ取ってくるようにしたら、循環参照は消えた
                 System.out.println("schoolId: "+school.getId());
                 System.out.println("el1: "+termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade));
                 System.out.println("today: "+termAndYearService.getSqlToday());
@@ -261,7 +261,8 @@ public class RegularTestController {
 
 
 
-    //TODO:とりあえず学校ごとに成績入力する画面を作る。
+    //TODO:とりあえず学校ごとに成績入力する画面を作る
+    // 成績入力画面に学校名、年度、学期、学年、isMidを出したいー＞regulartestshowを渡そう。
     @GetMapping("/regularTestResultEdit/{id}")
     public String regularTestResultEdit(@PathVariable("id")Integer regularTestId,
                                         Model model){
@@ -269,6 +270,9 @@ public class RegularTestController {
         List<RegularTestResultShow> regularTestResultShowList = regularTestResultConverter.convertRegularTestResultsToRegularTestResultShows(regularTestResultList);
         model.addAttribute("regularTestResultShowList",regularTestResultShowList);
         model.addAttribute("regularTestId",regularTestId);
+        RegularTest regularTest = regularTestService.fetchById(regularTestId);
+        RegularTestShow  regularTestShow = regularTestConverter.regularTestToRegularTestShow(regularTest);
+        model.addAttribute("regularTestShow",regularTestShow);
 
         return "regularTest/editResultBySchool";
     }
@@ -304,6 +308,58 @@ public class RegularTestController {
 
         // 更新後の結果一覧を再表示
         return "redirect:/regularTestResultEdit/" + regularTestId; // regularTestIdを使用
+    }
+
+    @GetMapping("/regularTestResultChunkEdit/{id}")
+    public String regularTestResultChunkEdit(@PathVariable("id")Integer regularTestSetId,
+                                        Model model){
+        List<RegularTestResult> regularTestResultList = regularTestResultRepository.findByRegularTestSetId(regularTestSetId);
+        List<RegularTestResultShow> regularTestResultShowList = regularTestResultConverter.convertRegularTestResultsToRegularTestResultShows(regularTestResultList);
+        model.addAttribute("regularTestResultShowList",regularTestResultShowList);
+        model.addAttribute("regularTestSetId",regularTestSetId);
+        Optional<RegularTestSet> optionalRegularTestSet = regularTestSetRepository.findById(regularTestSetId);
+        optionalRegularTestSet.ifPresent(regularTestSet -> {
+            model.addAttribute("regularTestSet",regularTestSet);
+            RegularTestShow regularTestShow = regularTestConverter.regularTestSetToRegularTestShow(regularTestSet);
+            model.addAttribute("regularTestShow",regularTestShow);
+        });
+        //TODO:RegularTestShowを渡さないといけない。学校名はいらない。nullでいい。->済
+
+
+        return "regularTest/editResultAtOnce";
+    }
+
+    @PostMapping("/RegularTestResultUpdateAtOnce")
+    public String regularTestResultUpdateAtOnce(@RequestParam Map<String, String> params, RedirectAttributes redirectAttributes) {
+        Integer regularTestSetId = Integer.valueOf(params.get("regularTestSetId"));
+
+        for (String key : params.keySet()) {
+            if (key.startsWith("id_")) {
+                Integer id = Integer.valueOf(params.get(key));
+                RegularTestResult result = regularTestResultRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid test result ID: " + id));
+
+                // 科目ごとの点数を更新
+                result.setJapanese(Integer.valueOf(params.get("japanese_" + id)));
+                result.setMath(Integer.valueOf(params.get("math_" + id)));
+                result.setEnglish(Integer.valueOf(params.get("english_" + id)));
+                result.setScience(Integer.valueOf(params.get("science_" + id)));
+                result.setSocial(Integer.valueOf(params.get("social_" + id)));
+                result.setMusic(Integer.valueOf(params.get("music_" + id)));
+                result.setArt(Integer.valueOf(params.get("art_" + id)));
+                result.setTech(Integer.valueOf(params.get("tech_" + id)));
+                result.setPe(Integer.valueOf(params.get("pe_" + id)));
+
+                // 保存
+                regularTestResultRepository.save(result);
+            }
+        }
+
+        // 成功メッセージを設定
+        redirectAttributes.addFlashAttribute("successMessage", "Results updated successfully!");
+
+        // 更新後の結果一覧を再表示
+        return "redirect:/regularTestResultChunkEdit/" + regularTestSetId; // regularTestIdを使用
     }
 
 

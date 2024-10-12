@@ -2,43 +2,54 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragment::head}"></div>
-    <title>Title</title>
+    <title>生徒一覧</title>
 </head>
 <body>
 <div th:replace="~{fragment::header}"></div>
-    <div th:if="${error}" style="color:red;">
-       <p th:text="${error}"></p>
+
+<div class="container mt-5">
+    <div th:if="${error}" class="alert alert-danger">
+        <p th:text="${error}"></p>
     </div>
-    <div th:if="${success}">
-        <p style="color:green;" th:text="${success}"></p>
+    <div th:if="${success}" class="alert alert-success">
+        <p th:text="${success}"></p>
     </div>
-    <div th:if="${editSuccess}">
-        <p style="color:green;">生徒の編集は成功しました。</p>
+    <div th:if="${editSuccess}" class="alert alert-success">
+        <p>生徒の編集は成功しました。</p>
     </div>
-    <h1>生徒一覧</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>生徒コード</th>
-                <th>生徒名</th>
-                <th>現学年</th>
-                <th>ステータス</th>
-                <th>学校名</th>
-                <th></th>
-                <th></th>
-            </tr>
+
+    <h1 class="mb-4">生徒一覧</h1>
+    <table class="table table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th>生徒コード</th>
+            <th>生徒名</th>
+            <th>現学年</th>
+            <th>ステータス</th>
+            <th>学校名</th>
+            <th colspan="2" class="text-center">操作</th>
+        </tr>
         </thead>
         <tbody>
-            <tr th:each="student:${studentShows}">
-                <td th:text="${student.getCode()}"></td>
-                <td th:text="${student.getName()}"></td>
-                <td th:text="${student.getGrade()}"></td>
-                <td th:text="${student.getStatusName()}"></td>
-                <td th:text="${student.getSchoolName()}"></td>
-                <td><a th:href="@{/studentEdit/__${student.getId()}__}" style="color:green;">生徒情報編集</a></td>
-                <td><a th:href="@{/student/delete/__${student.getId()}__}" style="color:red;">削除</a></td>
-            </tr>
+        <tr th:each="student : ${studentShows}">
+            <td th:text="${student.getCode()}"></td>
+            <td th:text="${student.getName()}"></td>
+            <td th:text="${student.getGrade()}"></td>
+            <td th:text="${student.getStatusName()}"></td>
+            <td th:text="${student.getSchoolName()}"></td>
+            <td>
+                <a th:href="@{/studentEdit/__${student.getId()}__}" class="btn btn-warning btn-sm">生徒情報編集</a>
+            </td>
+            <td>
+                <a th:href="@{/student/delete/__${student.getId()}__}" class="btn btn-danger btn-sm">削除</a>
+            </td>
+        </tr>
         </tbody>
     </table>
+</div>
+<div th:replace="~{fragment::footer}"></div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
