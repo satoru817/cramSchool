@@ -246,116 +246,37 @@ public class RegularTestController {
                 regularTestService.save(regularTest);//TODO OK
                 //TODO findSchoolStudentBySchoolAndDateAndEl1を書きなおす必要がある。
                 // このメソッドを書きなおす必要があるらしい。
-                System.out.println(school.getName());
+                System.out.println(school.getName());//MEMO ここまで来てる
                 System.out.println(termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade));//TODO この関数が間違ってる。->直した
 
                 //TODO 真下のメソッドが循環参照を生んでいるようだ。一旦なくす。
                 //TODO 本当はここで対応する全員のRegularTestResultを作成したかった。
-//                List<SchoolStudent> schoolStudentList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school,termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade), termAndYearService.getSqlToday());
-//                System.out.println("schoolStudentList:" + schoolStudentList);
-//                if(!schoolStudentList.isEmpty()){
-//                    for(SchoolStudent ss:schoolStudentList){
-//                        System.out.println("SchoolStudent:" + ss);
-//                        //TODO:ssに対応した全点数nullのRegularTestResultを作成する
-//                        RegularTestResult regularTestResult = new RegularTestResult();
-//                        regularTestResult.setRegularTest(regularTest);
-//                        regularTestResult.setStudent(ss.getStudent());
-//                        regularTestResultRepository.save(regularTestResult);
-//
-//                    }
-//                }
-//            }
+                //TODO JPQLを使うと循環参照を生んでそれが難しそうだから、ネイティブクエリでstudentのidを取ってきて
+                // Studentを作成して、何とかしようかな。、
+                System.out.println("schoolId: "+school.getId());
+                System.out.println("el1: "+termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade));
+                System.out.println("today: "+termAndYearService.getSqlToday());
+                List<Integer> studentIdList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school.getId(),termAndYearService.getWhenEnteredElementarySchoolForJuniorHighSchoolStudent(grade), termAndYearService.getSqlToday());
+
+                System.out.println("schoolStudentList:" + studentIdList);
+                if(!studentIdList.isEmpty()){
+                    for(Integer studentId:studentIdList){
+                        System.out.println("SchoolStudent:" + studentId);
+                        //TODO:ssに対応した全点数nullのRegularTestResultを作成する
+                        RegularTestResult regularTestResult = new RegularTestResult();
+                        regularTestResult.setRegularTest(regularTest);
+                        regularTestResult.setStudent(studentService.getById(studentId));
+                        regularTestResultRepository.save(regularTestResult);
+
+                    }
+                }
+            }
             }
             return "redirect:/showAllRegularTest";
 
 
-        }
 
-//    //TODO このメソッドにエラーがある。同じ学年同じ学期おなじisMidのテストを登録しようとするとエラーが
-//    // 出る。regular_test_set_id がnullになっているらしい。regularTestを保存するときにエラーが出ている 改修済み　条件分岐のミス
-//    //TODO RegularTest二重登録のエラーを無くす必要がある。
-//    @Transactional
-//    @PostMapping("/doCreateRegularTestSetAndRegularTests")
-//    public String doCreateRegularTestSetAndRegularTests(@RequestParam List<Integer> selectedSchoolIds,
-//                                        @RequestParam("grade")Integer grade,
-//                                        @RequestParam("semester")Integer semester,
-//                                        @RequestParam("isMid")Integer isMid,
-//                                        RedirectAttributes redirectAttributes) {
-//        //エラーがあったらもとのフォームに戻る
-//        if(grade==null||semester==null||isMid==null||selectedSchoolIds.isEmpty()){
-//            System.out.println("エラーがありました。");
-//            redirectAttributes.addFlashAttribute("hasError",true);
-//            redirectAttributes.addFlashAttribute("selectedSchoolIds",selectedSchoolIds);
-//            return "redirect:/createRegularTest";
-//        }else{
-//            System.out.println("isMidは存在します："+isMid);
-//            Date sqlToday = termAndYearService.getSqlToday();
-//            Integer thisTerm = termAndYearService.getTerm();
-//
-//
-//            //RegularTestSetに登録がなければ作成する
-//
-//            if(regularTestSetRepository.findByGradeAndTermAndIsMidAndSemester(grade,thisTerm,isMid,semester)==null){
-//                RegularTestSet regularTestSet = new RegularTestSet();
-//
-//                regularTestSet.setTerm(thisTerm);
-//                regularTestSet.setSemester(semester);
-//
-//                regularTestSet.setIsMid(isMid);
-//                regularTestSet.setGrade(grade);
-//
-//
-//                regularTestSetRepository.save(regularTestSet);
-//            }else{
-//                RegularTestSet regularTestSet = regularTestSetRepository.findByGradeAndTermAndIsMidAndSemester(grade,thisTerm,isMid,semester);
-//                for (Integer id : selectedSchoolIds) {
-//                    //すでに存在するかどうかの判定
-//                    School school = schoolService.fetchById(id);
-//                    if(regularTestService.getBySchoolAndGradeAndSemesterAndIsMidAndTerm(school,grade,semester,isMid,thisTerm)==null){
-//                        //regularTestが存在しなければ新規で作成して保存する
-//                        //TODO:schoolと学年が一致する生徒に関してはregular_exam_resultを作る。el1を使う
-//                        RegularTest regularTest = new RegularTest();
-//                        regularTest.setRegularTestSet(regularTestSet);//新たに追加した
-//                        regularTest.setSchool(school);
-//                        regularTest.setDate(sqlToday);
-//                        regularTestService.save(regularTest);//TODO OK
-//
-//                        List<SchoolStudent> schoolStudentList = schoolStudentRepository.findSchoolStudentBySchoolAndDateAndEl1(school,termAndYearService.getWhenEnteredElementarySchool(grade),termAndYearService.getSqlToday());
-//                        if(!schoolStudentList.isEmpty()){
-//                            for(SchoolStudent ss:schoolStudentList){
-//                                //TODO:ssに対応した全点数nullのRegularTestResultを作成する
-//                                RegularTestResult regularTestResult = new RegularTestResult();
-//                                regularTestResult.setRegularTest(regularTest);
-//                                regularTestResult.setStudent(ss.getStudent());
-//                                regularTestResultRepository.save(regularTestResult);
-//
-//                            }
-//                        }
-//
-//
-//
-//
-//
-//                    }else{
-//
-//                    }
-//                }
-//
-//                return "redirect:/showAllRegularTest";
-//
-//            }
-//            }
-//            //エラーがなければテストを作成する。
-//            // しかし、すでにDBに同じ学年同じ年度、同じ学期、同じ中間か期末の物があったら新規で作ってはならない。
-//
-//
-//
-//
-//
-//    }
-//
-//
-        return "redirect:/showAllRegularTest";
+
     }
 
     @GetMapping("/showAllRegularTestInChunks")
@@ -365,9 +286,9 @@ public class RegularTestController {
         return "/regularTest/showAllRegularTestInChunks";
     }
 
-    //TODO:testSet　のidで対応するtestを全て取ってきて、それに該当する生徒を全員まとめる？
-    @GetMapping("/regularTestResultChunkEdit/{id}")
-    public
+//    //TODO:testSet　のidで対応するtestを全て取ってきて、それに該当する生徒を全員まとめる？
+//    @GetMapping("/regularTestResultChunkEdit/{id}")
+//    public
 
 
 }

@@ -7,10 +7,10 @@ import java.sql.Date;
 
 @Entity
 @Data
-@Table(name="regular_exam")
+@Table(name="regular_test")
 public class RegularTest {
     @Id
-    @Column(name="id")
+    @Column(name="regular_test_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer regularTestId;
 

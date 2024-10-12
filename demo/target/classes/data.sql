@@ -1,4 +1,4 @@
-insert ignore into schools(id,name) values
+insert ignore into schools(school_id,name) values
 (1,'不明'),
 (2,'school1'),
 (3,'school2');
@@ -48,5 +48,13 @@ insert ignore into status(status_id,name) values
 (3,'体験'),
 (4,'本科');
 
-insert ignore into students(id,el1,code,name) values
-(1,1,1,'average');--全てのテストの平均点を紐づける平均くん
+insert ignore into students(student_id,el1,code,name )values
+(1,2000,1,'ave');
+
+insert ignore into schools(school_id,name) values
+(4,'増戸中学校'),
+(5,'五日市中学校'),
+(6,'平井中学校'),
+(7,'大久野中学校'),
+(8,'増戸小学校'),
+(6,'本宿小学校');

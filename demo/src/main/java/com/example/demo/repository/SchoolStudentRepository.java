@@ -17,13 +17,16 @@ public interface SchoolStudentRepository extends JpaRepository<SchoolStudent,Int
 
    List<SchoolStudent> findByStudentIdOrderByCreatedAtAsc(Integer studentId);
 
-   @Query("SELECT k FROM SchoolStudent k " +
-           "JOIN k.student s " +
-           "JOIN k.school sl " +
+   @Query(value = "SELECT  s.student_id " +
+           "FROM school_student k " +
+           "JOIN students s ON k.student_id = s.student_id " +
+           "JOIN schools sl ON k.school_id = sl.school_id " +
            "WHERE s.el1 = :el1 " +
-           "AND sl = :school " +
-           "AND :date BETWEEN k.createdAt AND k.changedAt " )
-   List<SchoolStudent> findSchoolStudentBySchoolAndDateAndEl1(@Param("school") School school, @Param("el1") Integer el1, @Param("date") java.sql.Date date);
+           "AND sl.school_id = :schoolId " +
+           "AND :date BETWEEN k.created_at AND k.changed_at",
+           nativeQuery = true)
+   List<Integer> findSchoolStudentBySchoolAndDateAndEl1(@Param("schoolId") Integer schoolId, @Param("el1") Integer el1, @Param("date") java.sql.Date date);
+
 
 }
 

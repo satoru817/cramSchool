@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="regular_exam_set")
+@Table(name="regular_test_set")
 public class RegularTestSet {
-    @Column(name="id")
+    @Column(name="regular_test_set_id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

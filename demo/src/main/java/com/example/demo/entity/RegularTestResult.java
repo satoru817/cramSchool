@@ -5,15 +5,15 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="regular_exam_result")
+@Table(name="regular_test_result")
 public class RegularTestResult {
     @Id
-    @Column(name="id")
+    @Column(name="regular_test_result_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name="regular_exam_id")
+    @JoinColumn(name="regular_test_id")
     private RegularTest regularTest;
 
     @ManyToOne

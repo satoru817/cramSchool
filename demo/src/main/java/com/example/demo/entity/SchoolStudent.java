@@ -11,7 +11,7 @@ import java.sql.Date;
 public class SchoolStudent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name="school_student_id")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY) // 遅延ロードを使うことでパフォーマンス向上

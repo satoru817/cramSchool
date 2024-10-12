@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface RegularTestRepository extends JpaRepository<RegularTest,Integer> {
     public List<RegularTest> findAll();
     public RegularTest getById(Integer id);
-    //TODO:このメソッドは書き換えなければならない。tableの構造が変わったからである。
+    //TODO:このメソッドは書き換えなければならない。tableの構造が変わったからである。->済
     @Query("SELECT rt FROM RegularTest rt " +
             "JOIN rt.regularTestSet rts " +
             "WHERE rt.school = :school " +
