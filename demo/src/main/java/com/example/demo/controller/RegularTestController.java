@@ -1,15 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.SchoolForm;
-import com.example.demo.dto.Subjects;
+import com.example.demo.dto.*;
 import com.example.demo.entity.*;
-import com.example.demo.dto.RegularTestForm;
 import com.example.demo.repository.RegularTestRepository;
 import com.example.demo.repository.RegularTestResultRepository;
 import com.example.demo.repository.RegularTestSetRepository;
 import com.example.demo.repository.SchoolStudentRepository;
 import com.example.demo.service.*;
-import com.example.demo.dto.RegularTestShow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.Conventions;
 import org.springframework.stereotype.Controller;
@@ -22,10 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Controller
@@ -40,6 +34,7 @@ public class RegularTestController {
     private final RegularTestSetRepository regularTestSetRepository;
     private final SchoolStudentRepository schoolStudentRepository;
     private final RegularTestRepository regularTestRepository;
+    private final RegularTestResultConverter regularTestResultConverter;
 
     //TODO:全体として、RegularTestSetIdに対応しないといけない。
     //テスト作成画面
@@ -168,29 +163,7 @@ public class RegularTestController {
 
 
     }
-//TODO後で復活させる
 
-//    @GetMapping("/regularTestResultEdit/{id}")
-//    public String regularTestResultEdit(@PathVariable("id")Integer regularTestId,
-//                                        Model model){
-//        RegularTest regularTest = regularTestService.fetchById(regularTestId);
-//        //regularTestが実施された日にregularTestが実施された学校に属し、regularTestが実施された学年である生徒を探し出す必要がある。こうする
-//        //つまり最新を探すのではなく日付で挟むのは、過去のデータを閲覧する際に使えなくてはならないからである。
-//        //List<Student> studentList = studentService.findAllBySchoolAndEl1(regularTest.getSchool(),termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()));
-//        //List<RegularTestResultForm>のオブジェクトを作成してviewに渡す必要がある。
-//        List<Student> studentList = studentService.getStudentsByEl1AndDateRangeAndSchoolId(termAndYearService.getWhenEnteredElementarySchool(regularTest.getGrade()), regularTest.getDate().toLocalDate(),regularTest.getSchool().getId());
-//        List<TestResultForm> testResultFormList = new ArrayList<>();
-//        for(Student student:studentList){
-//            TestResultForm testResultForm = new TestResultForm(student);
-//            testResultFormList.add(testResultForm);
-//        }
-//
-//        model.addAttribute("regularTestId",regularTestId);
-//        model.addAttribute("testResultFormList",testResultFormList);
-//        model.addAttribute("regularTestShow",regularTestConverter.regularTestToRegularTestShow(regularTestService.fetchById(regularTestId)));
-//
-//        return "test/testResultEdit";
-//    }
 
     @GetMapping("/createRegularTest")
     public String createRegularTests(Model model) {
@@ -286,9 +259,52 @@ public class RegularTestController {
         return "/regularTest/showAllRegularTestInChunks";
     }
 
-//    //TODO:testSet　のidで対応するtestを全て取ってきて、それに該当する生徒を全員まとめる？
-//    @GetMapping("/regularTestResultChunkEdit/{id}")
-//    public
+
+
+    //TODO:とりあえず学校ごとに成績入力する画面を作る。
+    @GetMapping("/regularTestResultEdit/{id}")
+    public String regularTestResultEdit(@PathVariable("id")Integer regularTestId,
+                                        Model model){
+        List<RegularTestResult> regularTestResultList = regularTestResultRepository.findByRegularTestId(regularTestId);
+        List<RegularTestResultShow> regularTestResultShowList = regularTestResultConverter.convertRegularTestResultsToRegularTestResultShows(regularTestResultList);
+        model.addAttribute("regularTestResultShowList",regularTestResultShowList);
+        model.addAttribute("regularTestId",regularTestId);
+
+        return "regularTest/editResultBySchool";
+    }
+
+    @PostMapping("/RegularTestResultUpdate")
+    public String regularTestResultUpdate(@RequestParam Map<String, String> params, RedirectAttributes redirectAttributes) {
+        Integer regularTestId = Integer.valueOf(params.get("regularTestId"));
+
+        for (String key : params.keySet()) {
+            if (key.startsWith("id_")) {
+                Integer id = Integer.valueOf(params.get(key));
+                RegularTestResult result = regularTestResultRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid test result ID: " + id));
+
+                // 科目ごとの点数を更新
+                result.setJapanese(Integer.valueOf(params.get("japanese_" + id)));
+                result.setMath(Integer.valueOf(params.get("math_" + id)));
+                result.setEnglish(Integer.valueOf(params.get("english_" + id)));
+                result.setScience(Integer.valueOf(params.get("science_" + id)));
+                result.setSocial(Integer.valueOf(params.get("social_" + id)));
+                result.setMusic(Integer.valueOf(params.get("music_" + id)));
+                result.setArt(Integer.valueOf(params.get("art_" + id)));
+                result.setTech(Integer.valueOf(params.get("tech_" + id)));
+                result.setPe(Integer.valueOf(params.get("pe_" + id)));
+
+                // 保存
+                regularTestResultRepository.save(result);
+            }
+        }
+
+        // 成功メッセージを設定
+        redirectAttributes.addFlashAttribute("successMessage", "Results updated successfully!");
+
+        // 更新後の結果一覧を再表示
+        return "redirect:/regularTestResultEdit/" + regularTestId; // regularTestIdを使用
+    }
 
 
 }

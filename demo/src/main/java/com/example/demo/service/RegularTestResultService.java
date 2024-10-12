@@ -18,6 +18,10 @@ public class RegularTestResultService {
         return regularTestResultRepository.findByRegularTestAndStudent(regularTest, student);
     }
 
+    public Optional<RegularTestResult> getRegularTestResultById(Integer regularTestResultId){
+        return regularTestResultRepository.findById(regularTestResultId);
+    }
+
 
     public void save(RegularTestResult regularTestResult) {
         regularTestResultRepository.save(regularTestResult);
