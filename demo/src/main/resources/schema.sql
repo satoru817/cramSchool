@@ -89,3 +89,8 @@ pe int,
 foreign key (regular_test_id) references regular_test(regular_test_id),
 foreign key(student_id) references students(student_id));
 
+create table if not exists mock_tests(
+    mock_test_id int not null primary key auto_increment,
+    name varchar(255),
+    grade int,
+    date DATE )
