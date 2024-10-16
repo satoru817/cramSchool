@@ -91,6 +91,38 @@ foreign key(student_id) references students(student_id));
 
 create table if not exists mock_tests(
     mock_test_id int not null primary key auto_increment,
-    name varchar(255),
-    grade int,
-    date DATE )
+    name varchar(255) unique,
+    date DATE
+);
+
+create table if not exists mock_test_results(
+    mock_test_result_id int not null primary key auto_increment,
+    mock_test_id int not null,
+    student_id int not null,
+    japanese int,
+    japanese_ss int,
+    math int,
+    math_ss int,
+    english int,
+    english_ss int,
+    science int,
+    science_ss int,
+    social int,
+    social_ss int,
+    jme_ss int,--3科目偏差値
+    jmess_ss int,--5科目偏差値
+    dream_school1 varchar(100),
+    dream_school1_probability int,
+    dream_school2 varchar(100),
+    dream_school2_probability int,
+    dream_school3 varchar(100),
+    dream_school3_probability int,
+    dream_school4 varchar(100),
+    dream_school4_probability int,
+    dream_school5 varchar(100),
+    dream_school5_probability int,
+    dream_school6 varchar(100),
+    dream_school6_probability int,
+    foreign key (mock_test_id) references mock_tests(mock_test_id),
+    foreign key (student_id) references students(student_id)
+);

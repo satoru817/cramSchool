@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
     @Query("select s from Student s " +
@@ -30,4 +31,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             @Param("el1") Integer el1,
             @Param("specificDate") LocalDate specificDate,
             @Param("schoolId") Integer schoolId);
+
+    Optional<Student> findByEl1AndName(Integer el1, String name);
 }

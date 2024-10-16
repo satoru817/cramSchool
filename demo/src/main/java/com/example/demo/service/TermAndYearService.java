@@ -62,6 +62,20 @@ public class TermAndYearService {
         return grade;
     }
 
+    //CSV読み込み時に
+    public int getWhenEnteredElementarySchoolForCsvReader(String grade,LocalDate date){
+        int thatYear = date.getYear();//実施年
+        Integer absGrade=convertGrade(grade);
+        LocalDate thatYearApril = LocalDate.of(thatYear, 4, 1);
+
+        if(date.isBefore(thatYearApril)){
+            return thatYear-absGrade;
+        }else{
+            return thatYear+1-absGrade;
+        }
+
+    }
+
     //小学一年生は1高校3年生は12の数値から小学校入学時(3/31)時点の西暦を算出する関数
     public int getWhenEnteredElementarySchool(int abGrade){
 
@@ -120,5 +134,35 @@ public class TermAndYearService {
         }
     }
 
+    public Integer convertGrade(String grade) {
+        switch (grade) {
+            case "小１":
+                return 1;
+            case "小２":
+                return 2;
+            case "小３":
+                return 3;
+            case "小４":
+                return 4;
+            case "小５":
+                return 5;
+            case "小６":
+                return 6;
+            case "中１":
+                return 7;
+            case "中２":
+                return 8;
+            case "中３":
+                return 9;
+            case "高１":
+                return 10;
+            case "高２":
+                return 11;
+            case "高３":
+                return 12;
+            default:
+                throw new IllegalArgumentException("不明な学年: " + grade);
+        }
+    }
 
 }

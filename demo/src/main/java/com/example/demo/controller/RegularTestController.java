@@ -144,7 +144,7 @@ public class RegularTestController {
                                     @ModelAttribute RegularTestForm regularTestForm,
                                     RedirectAttributes redirectAttributes,
                                     Model model){
-        System.out.println(regularTestForm);
+            System.out.println(regularTestForm);
 
             //TODO regularTestを更新する。OK
             // またaveのテスト結果も更新する。まずregularTestIdで該当するregularTestを取ってくる必要がある
