@@ -4,7 +4,7 @@
     <div th:replace="~{fragment::head}"></div>
     <title>Title</title>
 </head>
-<body>
+<body class="container-fluid d-flex flex-column min-vh-100">
     <div th:replace="~{fragment::header}"></div>
     <h1>学校登録をしてください</h1>
     <form th:action="@{/registerSchool}" th:object="${school}" method="post">
