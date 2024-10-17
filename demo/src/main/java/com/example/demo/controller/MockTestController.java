@@ -39,7 +39,7 @@ public class MockTestController {
     private final TermAndYearService termAndYearService;
 
     @PostMapping("/registerMockTest")
-    public String uploadCsv(@RequestParam("file") MultipartFile file,
+    public String uploadMockTestResultCsv(@RequestParam("file") MultipartFile file,
                             @RequestParam("date") LocalDate date,
                             Model model,
                             RedirectAttributes redirectAttributes) {
@@ -151,7 +151,7 @@ public class MockTestController {
                 mockTestResult.setDreamSchool6(dreamSchool6);
                 mockTestResult.setDreamSchool6Probability(parseProbability(probability6));
 
-                mockTestResultRepository.save(mockTestResult);
+                mockTestResultRepository.save(mockTestResult);//TODO:念のため、この時upsertになるようにする必要がある。つまり、tableのキーをmock_testとstudent_idを組み合わせた複合主キーにする必要がある。
             }
 
 

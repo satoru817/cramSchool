@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,19 +9,16 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "mock_test_results")
-@Getter
-@Setter
+@IdClass(MockTestResultId.class) // 複合主キーの指定
+@Data
 public class MockTestResult implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mock_test_result_id")
-    private Integer mockTestResultId;
-
     @ManyToOne
     @JoinColumn(name = "mock_test_id", nullable = false)
     private MockTest mockTest;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;

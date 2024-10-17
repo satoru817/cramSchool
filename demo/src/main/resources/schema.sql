@@ -95,34 +95,34 @@ create table if not exists mock_tests(
     date DATE
 );
 
-create table if not exists mock_test_results(
-    mock_test_result_id int not null primary key auto_increment,
-    mock_test_id int not null,
-    student_id int not null,
-    japanese int,
-    japanese_ss int,
-    math int,
-    math_ss int,
-    english int,
-    english_ss int,
-    science int,
-    science_ss int,
-    social int,
-    social_ss int,
-    jme_ss int,--3科目偏差値
-    jmess_ss int,--5科目偏差値
-    dream_school1 varchar(100),
-    dream_school1_probability int,
-    dream_school2 varchar(100),
-    dream_school2_probability int,
-    dream_school3 varchar(100),
-    dream_school3_probability int,
-    dream_school4 varchar(100),
-    dream_school4_probability int,
-    dream_school5 varchar(100),
-    dream_school5_probability int,
-    dream_school6 varchar(100),
-    dream_school6_probability int,
-    foreign key (mock_test_id) references mock_tests(mock_test_id),
-    foreign key (student_id) references students(student_id)
+CREATE TABLE IF NOT EXISTS mock_test_results (
+    mock_test_id INT NOT NULL,
+    student_id INT NOT NULL,
+    japanese INT,
+    japanese_ss INT,
+    math INT,
+    math_ss INT,
+    english INT,
+    english_ss INT,
+    science INT,
+    science_ss INT,
+    social INT,
+    social_ss INT,
+    jme_ss INT,        -- 3科目偏差値
+    jmess_ss INT,      -- 5科目偏差値
+    dream_school1 VARCHAR(100),
+    dream_school1_probability INT,
+    dream_school2 VARCHAR(100),
+    dream_school2_probability INT,
+    dream_school3 VARCHAR(100),
+    dream_school3_probability INT,
+    dream_school4 VARCHAR(100),
+    dream_school4_probability INT,
+    dream_school5 VARCHAR(100),
+    dream_school5_probability INT,
+    dream_school6 VARCHAR(100),
+    dream_school6_probability INT,
+    PRIMARY KEY (mock_test_id, student_id), -- 複合主キーの設定
+    FOREIGN KEY (mock_test_id) REFERENCES mock_tests(mock_test_id),
+    FOREIGN KEY (student_id) REFERENCES students(student_id)
 );
