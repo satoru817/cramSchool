@@ -126,3 +126,29 @@ CREATE TABLE IF NOT EXISTS mock_test_results (
     FOREIGN KEY (mock_test_id) REFERENCES mock_tests(mock_test_id),
     FOREIGN KEY (student_id) REFERENCES students(student_id)
 );
+
+create table if not exists school_record (
+    school_id int not null,
+    term int not null,
+    grade int not null,
+    semester int not null,
+    primary key(school_id,term,grade,semester),
+    foreign key(school_id) references school(school_id)
+);
+
+create table if not exists school_record_result(
+    student_id int not null,
+    school_record_id int not null,
+    japanese tinyint(1),
+    math tinyint(1),
+    english tinyint(1),
+    science tinyint(1),
+    social tinyint(1),
+    music tinyint(1),
+    art tinyint(1),
+    technology tinyint(1),
+    pe tinyint(1),
+    primary key(student_id,school_record_id),
+    foreign key(student_id) references student(student_id),
+    foreign key(school_record_id) references school_record(school_record_id)
+)

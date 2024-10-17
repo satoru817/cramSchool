@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <div th:replace="~{fragment::head}"></div>
+  <title>Mock Tests</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+  <h1>模試一覧</h1>
+
+  <table class="table table-striped">
+    <thead class="thead-dark">
+    <tr>
+      <th>模試名</th>
+      <th>実施日</th>
+      <!-- 他のカラム -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="mockTest : ${mockTests.content}">
+      <td>
+        <a th:href="@{/mockTests/{id}(id=${mockTest.id})}" th:text="${mockTest.name}"></a>
+      </td>
+      <td th:text="${mockTest.date}"></td>
+      <!-- 他のカラム -->
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <span>Page <strong th:text="${mockTests.number + 1}">1</strong> of <strong th:text="${mockTests.totalPages}">1</strong></span>
+
+    <nav>
+      <ul class="pagination">
+        <li class="page-item" th:if="${mockTests.hasPrevious()}">
+          <a class="page-link" th:href="@{/mockTests(page=${mockTests.number - 1})}">Previous</a>
+        </li>
+        <li class="page-item" th:each="page : ${#numbers.sequence(0, mockTests.totalPages - 1)}">
+          <a class="page-link" th:href="@{/mockTests(page=${page})}" th:text="${page + 1}"></a>
+        </li>
+        <li class="page-item" th:if="${mockTests.hasNext()}">
+          <a class="page-link" th:href="@{/mockTests(page=${mockTests.number + 1})}">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+</body>
+</html>

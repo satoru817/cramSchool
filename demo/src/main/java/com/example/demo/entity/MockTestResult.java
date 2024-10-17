@@ -20,14 +20,6 @@ public class MockTestResult implements Serializable {
     @Id
     @Column(name = "student_id", nullable = false)
     private Integer studentId; // 追加
-    //TODO:複合主キーの扱いがよくわからず、とりあえず動かす為に、下のふたつを消した。が、できたら、存在してほしい。->insertable = false,updatable=falseで解決。
-//    @ManyToOne
-//    @JoinColumn(name = "mock_test_id") // 参照用
-//    private MockTest mockTest;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "student_id") // 参照用
-//    private Student student;
 
     @ManyToOne
     @JoinColumn(name = "mock_test_id", insertable = false, updatable = false) // 参照用

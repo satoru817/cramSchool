@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <div th:replace="~{fragment::head}"></div>
+  <meta charset="UTF-8">
+  <title>テスト結果表示</title>
+</head>
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5">
+  <h1 th:text="${mockTestResults.content[0].mockTest.name}">テスト名</h1>
+
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>生徒名</th>
+      <th>国語</th>
+      <th>数学</th>
+      <th>英語</th>
+      <th>理科</th>
+      <th>社会</th>
+      <th>志望校1 名</th>
+      <th>合格可能性1 (%)</th>
+      <th>志望校2 名</th>
+      <th>合格可能性2 (%)</th>
+      <th>志望校3 名</th>
+      <th>合格可能性3 (%)</th>
+      <th>志望校4 名</th>
+      <th>合格可能性4 (%)</th>
+      <th>志望校5 名</th>
+      <th>合格可能性5 (%)</th>
+      <th>志望校6 名</th>
+      <th>合格可能性6 (%)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="result : ${mockTestResults.content}">
+      <td th:text="${result.student.name}">生徒名</td>
+      <td th:text="${result.japanese}">国語得点</td>
+      <td th:text="${result.math}">数学得点</td>
+      <td th:text="${result.english}">英語得点</td>
+      <td th:text="${result.science}">理科得点</td>
+      <td th:text="${result.social}">社会得点</td>
+
+      <td th:text="${result.dreamSchool1}"></td>
+      <td th:text="${result.dreamSchool1Probability} + '%'"></td>
+      <td th:text="${result.dreamSchool2}"></td>
+      <td th:text="${result.dreamSchool2Probability} + '%'"></td>
+      <td th:text="${result.dreamSchool3}"></td>
+      <td th:text="${result.dreamSchool3Probability} + '%'"></td>
+      <td th:text="${result.dreamSchool4}"></td>
+      <td th:text="${result.dreamSchool4Probability} + '%'"></td>
+      <td th:text="${result.dreamSchool5}"></td>
+      <td th:text="${result.dreamSchool5Probability} + '%'"></td>
+      <td th:text="${result.dreamSchool6}"></td>
+      <td th:text="${result.dreamSchool6Probability} + '%'"></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div th:if="${mockTestResults.hasContent() && mockTestResults.totalPages > 1}">
+    <div class="pagination">
+      <nav aria-label="Page navigation">
+        <ul class="pagination">
+          <li class="page-item" th:class="${mockTestResults.hasPrevious() ? '' : 'disabled'}">
+            <a class="page-link" th:href="@{${mockTestResults.previousPageable}}" th:if="${mockTestResults.hasPrevious()}">前</a>
+          </li>
+          <li th:each="i : ${#numbers.sequence(1, mockTestResults.totalPages)}" class="page-item" th:class="${i == mockTestResults.number + 1 ? 'active' : ''}">
+            <a class="page-link" th:href="@{${mockTestResults.getPageable(i - 1)}}" th:text="${i}"></a>
+          </li>
+          <li class="page-item" th:class="${mockTestResults.hasNext() ? '' : 'disabled'}">
+            <a class="page-link" th:href="@{${mockTestResults.nextPageable}}" th:if="${mockTestResults.hasNext()}">次</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+
+</body>
+</html>

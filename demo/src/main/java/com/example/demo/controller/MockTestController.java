@@ -204,9 +204,10 @@ public class MockTestController {
     }
 
     @GetMapping("/mockTests/{id}")
-    public String getMockTestResult(@PageableDefault(page = 0,size = 20, sort = "date", direction = Sort.Direction.DESC)Pageable pageable,
+    public String getMockTestResult(@PageableDefault(page = 0,size = 20, sort = "studentId", direction = Sort.Direction.DESC)Pageable pageable,
+                                    @PathVariable("id") Integer mockTestId,
                                     Model model){
-        Page<MockTestResult> mockTestResults = mockTestResultService.getAllMockTestResult(pageable);
+        Page<MockTestResult> mockTestResults = mockTestResultService.getAllMockTestResultByMockTestId(pageable,mockTestId);
         model.addAttribute("mockTestResults",mockTestResults);
         return "/mockTest/mockTestResults";
     }

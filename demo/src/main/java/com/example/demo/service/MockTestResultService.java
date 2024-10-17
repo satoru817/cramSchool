@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.MockTest;
 import com.example.demo.entity.MockTestResult;
 import com.example.demo.repository.MockTestResultRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,5 +15,9 @@ public class MockTestResultService {
 
     public Page<MockTestResult> getAllMockTestResult(Pageable pageable){
         return mockTestResultRepository.findAll(pageable);
+    }
+
+    public Page<MockTestResult> getAllMockTestResultByMockTestId(Pageable pageable, Integer mockTestId){
+        return mockTestResultRepository.findAllByMockTestId(mockTestId,pageable);
     }
 }
