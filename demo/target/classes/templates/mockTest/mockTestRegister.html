@@ -6,7 +6,7 @@
 </head>
 <body class="container-fluid d-flex flex-column min-vh-100">
 <h1>CSVファイルアップロード</h1>
-<form action="/studentUploadCSV" method="post" enctype="multipart/form-data">
+<form th:action="@{/registerMockTest}" enctype="multipart/form-data" method="post">
     <label for="file">CSVファイルを選択:</label>
     <input type="file" id="file" name="file" accept=".csv" required><br><br>
 
@@ -24,59 +24,5 @@
 </div>
 </body>
 </html>
-//TODO:controllerはどうにかしないと、StudentRegisterを真似しよう。
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStreamReader;
-import java.util.List;
-
-@Controller
-public class StudentController {
-
-@PostMapping("/studentUploadCSV")
-public String uploadCsv(@RequestParam("file") MultipartFile file,
-@RequestParam("date") String date,
-Model model,
-RedirectAttributes redirectAttributes) {
-if (file.isEmpty()) {
-model.addAttribute("error", "CSVファイルを選択してください。");
-return "uploadForm"; // エラービューに戻る
-}
-
-String fileName = file.getOriginalFilename(); // ファイル名を取得
-
-try (InputStreamReader reader = new InputStreamReader(file.getInputStream())) {
-// CSVを読み込む
-CsvToBean<StudentScore> csvToBean = new CsvToBeanBuilder<StudentScore>(reader)
-    .withType(StudentScore.class)
-    .withIgnoreLeadingWhiteSpace(true)
-    .build();
-
-    List<StudentScore> students = csvToBean.parse();
-
-        // 実施日を利用した処理
-        System.out.println("実施日: " + date);
-
-        // 取得したデータを処理
-        for (StudentScore student : students) {
-        System.out.println("学生情報: " + student.getStudentId() + ", " + student.getSchoolName());
-        // データベースに保存するなどの処理をここに追加
-        }
-
-        redirectAttributes.addFlashAttribute("success", "CSVファイルが正常にアップロードされました: " + fileName);
-        } catch (Exception e) {
-        model.addAttribute("error", "ファイル処理中にエラーが発生しました: " + e.getMessage());
-        return "uploadForm"; // エラービューに戻る
-        }
-
-        return "redirect:/uploadForm"; // 成功時もフォームに戻る
-        }
-        }
 

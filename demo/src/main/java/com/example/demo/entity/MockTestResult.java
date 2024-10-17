@@ -14,14 +14,28 @@ import java.io.Serializable;
 public class MockTestResult implements Serializable {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "mock_test_id", nullable = false)
-    private MockTest mockTest;
+    @Column(name = "mock_test_id", nullable = false)
+    private Integer mockTestId; // 追加
 
     @Id
+    @Column(name = "student_id", nullable = false)
+    private Integer studentId; // 追加
+    //TODO:複合主キーの扱いがよくわからず、とりあえず動かす為に、下のふたつを消した。が、できたら、存在してほしい。->insertable = false,updatable=falseで解決。
+//    @ManyToOne
+//    @JoinColumn(name = "mock_test_id") // 参照用
+//    private MockTest mockTest;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "student_id") // 参照用
+//    private Student student;
+
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private Student student;
+    @JoinColumn(name = "mock_test_id", insertable = false, updatable = false) // 参照用
+    private MockTest mockTest; // MockTestを参照
+
+    @ManyToOne
+    @JoinColumn(name = "student_id", insertable = false, updatable = false) // 参照用
+    private Student student; // Studentを参照
 
     @Column(name = "japanese")
     private Integer japanese;

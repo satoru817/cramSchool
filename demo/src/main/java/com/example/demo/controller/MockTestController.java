@@ -38,6 +38,7 @@ public class MockTestController {
     private final StudentRepository studentRepository;
     private final TermAndYearService termAndYearService;
 
+
     @PostMapping("/registerMockTest")
     public String uploadMockTestResultCsv(@RequestParam("file") MultipartFile file,
                             @RequestParam("date") LocalDate date,
@@ -69,10 +70,6 @@ public class MockTestController {
 
                 System.out.println("Record: " + record);
                 // Access the specific columns by header names
-                String registrationNumber = record.get("登録番号");
-                String jukuCode = record.get("塾コード");
-                String jukuName = record.get("塾名");
-                String classroomName = record.get("教室名");
                 String grade = record.get("学年");
                 String jukuNumber = record.get("塾内番号");
                 String gender = record.get("性別");
@@ -115,9 +112,10 @@ public class MockTestController {
                 MockTestResult mockTestResult = new MockTestResult();
 
                 // MockTest と Student の設定
-                mockTestResult.setMockTest(mockTest); // mockTest は事前に取得または作成しておく
+                mockTestResult.setMockTestId(mockTest.getId());
                 if (student.isPresent()) {
-                    mockTestResult.setStudent(student.get());
+                    mockTestResult.setStudentId(student.get().getId());
+
                 } else {
                     // Student が見つからなかった場合の処理
                     throw new IllegalArgumentException("Student not found: " + studentName);
@@ -138,20 +136,23 @@ public class MockTestController {
                 mockTestResult.setJmessSs(parseInteger(jmessSs));
 
                 // 志望校名と合格可能性の設定 (null チェックを追加)
-                mockTestResult.setDreamSchool1(dreamSchool1);
+
+                mockTestResult.setDreamSchool1(getDreamSchoolValue(dreamSchool1));
+                mockTestResult.setDreamSchool2(getDreamSchoolValue(dreamSchool2));
+                mockTestResult.setDreamSchool3(getDreamSchoolValue(dreamSchool3));
+                mockTestResult.setDreamSchool4(getDreamSchoolValue(dreamSchool4));
+                mockTestResult.setDreamSchool5(getDreamSchoolValue(dreamSchool5));
+                mockTestResult.setDreamSchool6(getDreamSchoolValue(dreamSchool6));
+
+
                 mockTestResult.setDreamSchool1Probability(parseProbability(probability1));
-                mockTestResult.setDreamSchool2(dreamSchool2);
                 mockTestResult.setDreamSchool2Probability(parseProbability(probability2));
-                mockTestResult.setDreamSchool3(dreamSchool3);
                 mockTestResult.setDreamSchool3Probability(parseProbability(probability3));
-                mockTestResult.setDreamSchool4(dreamSchool4);
                 mockTestResult.setDreamSchool4Probability(parseProbability(probability4));
-                mockTestResult.setDreamSchool5(dreamSchool5);
                 mockTestResult.setDreamSchool5Probability(parseProbability(probability5));
-                mockTestResult.setDreamSchool6(dreamSchool6);
                 mockTestResult.setDreamSchool6Probability(parseProbability(probability6));
 
-                mockTestResultRepository.save(mockTestResult);//TODO:念のため、この時upsertになるようにする必要がある。つまり、tableのキーをmock_testとstudent_idを組み合わせた複合主キーにする必要がある。
+                mockTestResultRepository.save(mockTestResult);//TODO:念のため、この時upsertになるようにする必要がある。つまり、tableのキーをmock_testとstudent_idを組み合わせた複合主キーにする必要がある。->DONE
             }
 
 
@@ -165,16 +166,20 @@ public class MockTestController {
     // 整数に変換するメソッド (null チェックを追加)
     private Integer parseInteger(String value) {
         if (value == null || value.trim().isEmpty()) {
-            return null; // または適切なデフォルト値を返す
+            return 0; // または適切なデフォルト値を返す
         }
         return Integer.valueOf(value.trim());
     }
     // 合格可能性を変換するメソッド
     private Integer parseProbability(String probability) {
         if (probability == null || probability.trim().isEmpty() || probability.equals("**")) {
-            return null; // または適切なデフォルト値を返す
+            return 0; // または適切なデフォルト値を返す
         }
         return Integer.valueOf(probability.trim());
+    }
+
+    private String getDreamSchoolValue(String dreamSchool) {
+        return dreamSchool != null ? dreamSchool : "N/A";
     }
 
     @GetMapping("/mockTestRegisterForm")
