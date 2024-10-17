@@ -4,8 +4,10 @@
     <div th:replace="~{fragment::head}"></div>
     <title>Title</title>
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
+<body>
 <div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
+
 <h2>ステータス登録をしてください</h2>
 <form th:action="@{/registerStatus}" th:object="${status}" method="post">
     <label for="name">ステータス名</label>
@@ -30,6 +32,8 @@
     </tr>
     </tbody>
 </table>
+</div>
 <div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
 </body>
 </html>

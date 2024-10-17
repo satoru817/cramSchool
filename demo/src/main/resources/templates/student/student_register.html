@@ -1,25 +1,27 @@
+
+
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <div th:replace="~{fragment::head}"></div>
   <title>生徒登録</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <div th:replace="~{fragment::head}"></div>
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
+<body>
 <div th:replace="~{fragment::header}"></div>
 
 <div class="container mt-5">
-  <h1>生徒登録をしてください</h1>
+  <h1 class="text-center">生徒登録をしてください</h1>
+
   <form th:action="@{/studentRegister}" th:object="${studentForm}" method="post">
     <div class="form-group">
       <label for="code">生徒コード</label>
-      <input type="text" th:field="*{code}" class="form-control" style="color:blue; width: 250px;">
+      <input type="text" th:field="*{code}" class="form-control" style="color:blue;">
       <div th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="text-danger"></div>
     </div>
 
     <div class="form-group">
       <label for="name">生徒名</label>
-      <input type="text" th:field="*{name}" class="form-control" style="color:blue; width: 250px;">
+      <input type="text" th:field="*{name}" class="form-control" style="color:blue;">
       <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
     </div>
 
@@ -27,13 +29,14 @@
       <label for="statusId">ステータス</label>
       <div th:each="status : ${statusList}">
         <div class="form-check">
-          <input class="form-check-input" type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" id="statusId${status.getStatusId()}">
+          <input class="form-check-input" type="radio" th:field="*{statusId}" th:value="${status.getStatusId()}" th:id="statusId__${status.getStatusId()}__">
           <label class="form-check-label" th:for="'statusId' + ${status.getStatusId()}">
             <span th:text="${status.getName()}"></span>
           </label>
         </div>
       </div>
     </div>
+
 
     <div class="form-group">
       <label>現在の学年を選択してください。</label>
@@ -88,18 +91,20 @@
       <div th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" class="text-danger"></div>
     </div>
 
+
     <hr>
     <div class="form-group">
       <label for="schoolId">所属学校名</label>
       <div th:each="school : ${schoolList}">
         <div class="form-check">
-          <input class="form-check-input" type="radio" th:field="*{schoolId}" th:value="${school.getId()}" id="schoolId${school.getId()}">
+          <input class="form-check-input" type="radio" th:field="*{schoolId}" th:value="${school.getId()}" th:id="schoolId__${school.getId()}__">
           <label class="form-check-label" th:for="'schoolId' + ${school.getId()}">
             <span th:text="${school.getName()}"></span>
           </label>
         </div>
       </div>
     </div>
+
 
     <button type="submit" class="btn btn-primary">登録</button>
   </form>
@@ -115,11 +120,8 @@
     <button type="submit" class="btn btn-success mt-3">アップロード</button>
   </form>
 </div>
+
 <div th:replace="~{fragment::footer}"></div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div th:replace="~{fragment::script}"></div>
 </body>
-
 </html>
-

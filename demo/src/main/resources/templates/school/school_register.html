@@ -4,8 +4,10 @@
     <div th:replace="~{fragment::head}"></div>
     <title>Title</title>
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
-    <div th:replace="~{fragment::header}"></div>
+
+<body>
+<div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
     <h1>学校登録をしてください</h1>
     <form th:action="@{/registerSchool}" th:object="${school}" method="post">
         <label for="name">学校名</label>
@@ -32,6 +34,9 @@
             </tr>
         </tbody>
     </table>
-    <div th:replace="~{fragment::footer}"></div>
+</div>
+<div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
 </body>
+
 </html>

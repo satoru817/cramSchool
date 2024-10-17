@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>クラス登録</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <div th:replace="~{fragment::head}"></div>
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
+<body>
 <div th:replace="~{fragment::header}"></div>
-<div class="container mt-5">
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
     <h1 class="mb-4 text-center">クラス登録</h1>
     <form th:action="@{/submitClassRegistration}" method="post">
         <table class="table table-bordered table-striped">
@@ -77,8 +74,8 @@
     </form>
 </div>
 <div th:replace="~{fragment::footer}"></div>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<div th:replace="~{fragment::script}"></div>
+
 </body>
 </html>
 

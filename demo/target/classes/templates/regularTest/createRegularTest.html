@@ -2,13 +2,12 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="${isEdit ? 'テスト編集フォーム' : 'テスト登録フォーム'}"></title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <div th:replace="~{fragment::head}"></div>
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
+<body>
 <div th:replace="~{fragment::header}"></div>
 
-<div class="container mt-4">
+<div class="container mt-4 justify-content-center align-items-center min-vh-100">
     <h2 class="mb-4" th:text="${isEdit ?
             (regularTestSet.term + '年度 ' + regularTest.getSchool().getName() + regularTestSet.grade + '学年 ' + regularTestSet.semester + '学期 ' + (regularTestSet.isMid == 1 ? '中間' : '期末')) :
             'テスト登録フォーム'}"></h2>
@@ -118,9 +117,6 @@
 </div>
 
 <div th:replace="~{fragment::footer}"></div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div th:replace="~{fragment::script}"></div>
 </body>
 </html>

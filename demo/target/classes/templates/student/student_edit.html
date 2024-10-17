@@ -5,7 +5,8 @@
     <title>Title</title>
 
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
+<body>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div th:replace="~{fragment::header}"></div>
     <h1>生徒の編集</h1>
     <form  th:object="${studentForm}" method="post" th:action="@{/studentExecEdit/__${id}__}">
@@ -81,5 +82,7 @@
         <input type="submit" value="登録">
     </form>
     <div th:replace="~{fragment::footer}"></div>
+    <div th:replace="~{fragment::script}"></div>
+</div>
 </body>
 </html>

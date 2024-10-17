@@ -4,8 +4,9 @@
   <title>Classes List</title>
     <div th:replace="~{fragment::head}"></div>
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
+<body>
 <div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
   <h1>登録済みクラス</h1>
  <table border="1">
     <thead>
@@ -53,6 +54,9 @@
   　　</div>
     　<button type="submit">クラスを登録</button>
   </form>
+</div>
 <div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+
 </body>
 </html>

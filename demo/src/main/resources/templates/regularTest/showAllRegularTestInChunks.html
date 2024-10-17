@@ -4,8 +4,9 @@
     <div th:replace="~{fragment::head}"></div>
     <title>Regular Tests</title>
 </head>
-<body class="container-fluid d-flex flex-column min-vh-100">
+<body>
 <div th:replace="~{fragment::header}"></div>
+<div class="container mt-5 justify-content-center align-items-center min-vh-100">
 <h1>定期テスト</h1>
 <ul>
     <li th:each="testSet : ${regularTestSetList}">
@@ -19,7 +20,9 @@
         <hr>
     </li>
 </ul>
-
-</body>
+</div>
 <div th:replace="~{fragment::footer}"></div>
+<div th:replace="~{fragment::script}"></div>
+</body>
+
 </html>

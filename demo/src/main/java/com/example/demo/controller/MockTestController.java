@@ -12,6 +12,10 @@ import com.example.demo.dto.StudentShow;
 import com.example.demo.dto.StudentForm;
 
 import org.springframework.core.Conventions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -20,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,6 +42,8 @@ public class MockTestController {
     private final MockTestResultRepository mockTestResultRepository;
     private final StudentRepository studentRepository;
     private final TermAndYearService termAndYearService;
+    private final MockTestService mockTestService;
+    private final MockTestResultService mockTestResultService;
 
 
     @PostMapping("/registerMockTest")
@@ -182,8 +189,25 @@ public class MockTestController {
         return dreamSchool != null ? dreamSchool : "N/A";
     }
 
+    //模試結果登録フォーム
     @GetMapping("/mockTestRegisterForm")
     public String mockTestRegisterForm(){
         return "/mockTest/mockTestRegister";
+    }
+
+    @GetMapping("/mockTests")
+    public String getMockTests(@PageableDefault(page = 0,size = 10, sort = "date", direction = Sort.Direction.DESC)Pageable pageable,
+                               Model model) {
+        Page<MockTest> mockTests = mockTestService.getAllMockTests(pageable);
+        model.addAttribute("mockTests", mockTests);
+        return "/mockTest/mockTests"; // Thymeleafテンプレート名
+    }
+
+    @GetMapping("/mockTests/{id}")
+    public String getMockTestResult(@PageableDefault(page = 0,size = 20, sort = "date", direction = Sort.Direction.DESC)Pageable pageable,
+                                    Model model){
+        Page<MockTestResult> mockTestResults = mockTestResultService.getAllMockTestResult(pageable);
+        model.addAttribute("mockTestResults",mockTestResults);
+        return "/mockTest/mockTestResults";
     }
 }
